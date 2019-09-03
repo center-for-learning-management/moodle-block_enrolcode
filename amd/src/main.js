@@ -1,6 +1,6 @@
 define(
-    ['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/templates', 'core/url', 'core/modal_factory', 'block_enrolcode/modal_code'],
-    function($, AJAX, NOTIFICATION, STR, TEMPLATES, URL, ModalFactory, ModalCode) {
+    ['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/templates', 'core/url', 'core/modal_factory', 'block_enrolcode/modal_code', 'block_enrolcode/modal_enter'],
+    function($, AJAX, NOTIFICATION, STR, TEMPLATES, URL, ModalFactory, ModalCode, ModalEnter) {
     return {
         /**
          * Get a code for fast enrolment
@@ -55,14 +55,16 @@ define(
             }]);
         },
         /**
-         * Send a code for fast enrolment
+         * Send a code for fast enrolment, either provider uniqid OR code
          * @param uniqid of form containing the input-element for the code.
+         * @param code the code directly
          */
-        sendCode: function(uniqid) {
+        sendCode: function(uniqid, code) {
             var MAIN = this;
-            console.log('MAIN.sendCode(uniqid)', uniqid);
-
-            var code = $('#code-' + uniqid).val();
+            console.log('MAIN.sendCode(uniqid, code)', uniqid, code);
+            if (typeof uniqid !== 'undefined' && uniqid != '') {
+                code = $('#code-' + uniqid).val();
+            }
             AJAX.call([{
                 methodname: 'block_enrolcode_send',
                 args: { 'code': code },
@@ -84,6 +86,16 @@ define(
                 },
                 fail: NOTIFICATION.exception
             }]);
+        },
+        /**
+         * Show the form to enter a code in a modal.
+         */
+        sendCodeModal: function() {
+            ModalFactory.create({
+                type: ModalEnter.TYPE
+            }).then(function(modal) {
+                modal.show();
+            });
         },
     };
 });
