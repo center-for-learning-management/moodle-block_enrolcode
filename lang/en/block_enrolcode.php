@@ -24,9 +24,13 @@
 $string['pluginname'] = 'EnrolByCode';
 $string['privacy:metadata'] = 'This plugin does not store any personal data';
 
+$string['code:accesscode'] = 'Accesscode';
 $string['code:enrol'] = 'enrol';
 $string['code:enter'] = 'Enter temporary accesscode';
 $string['code:get'] = 'Temporary accesscode';
 $string['code:get:error'] = 'Error creating temporary accesscode';
+
+$string['enrolcode:addinstance'] = 'Add enrolcode-Block';
+$string['enrolcode:myaddinstance'] = 'Add enrolcode-Block to Dashboard';
 
 $string['finished'] = 'Finished';

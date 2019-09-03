@@ -27,6 +27,30 @@ require_once($CFG->libdir . "/externallib.php");
 require_once($CFG->dirroot . "/blocks/enrolcode/lib.php");
 
 class block_enrolcode_external extends external_api {
+    public static function form_parameters() {
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+        ));
+    }
+
+    /**
+     * Get form as html.
+     * @return created accesscode
+     */
+    public static function form($courseid) {
+        global $PAGE;
+        $PAGE->set_context(context_system::instance());
+        $params = self::validate_parameters(self::form_parameters(), array('courseid' => $courseid));
+        return block_enrolcode_lib::create_form($params['courseid']);
+    }
+    /**
+     * Return definition.
+     * @return external_value
+     */
+    public static function form_returns() {
+        return new external_value(PARAM_RAW, 'The form as HTML.');
+    }
+
     public static function get_parameters() {
         return new external_function_parameters(array(
             'courseid' => new external_value(PARAM_INT, 'id of course'),

@@ -1,9 +1,9 @@
 define(
-    ['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/templates', 'core/url', 'core/modal_factory', 'block_enrolcode/modal_code', 'block_enrolcode/modal_enter'],
-    function($, AJAX, NOTIFICATION, STR, TEMPLATES, URL, ModalFactory, ModalCode, ModalEnter) {
+    ['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/templates', 'core/url', 'core/modal_events', 'core/modal_factory', 'block_enrolcode/modal_code', 'block_enrolcode/modal_enter'],
+    function($, AJAX, NOTIFICATION, STR, TEMPLATES, URL, ModalEvents, ModalFactory, ModalCode, ModalEnter) {
     return {
         /**
-         * Get a code for fast enrolment
+         * Get a code for fast enrolment.
          * @param uniqid of form
          */
         getCode: function(uniqid) {
@@ -40,6 +40,37 @@ define(
                 },
                 fail: NOTIFICATION.exception
             }]);
+        },
+        /**
+         * Show the form to get a code in a modal.
+         * @param courseid the courseid we need the modal for.
+         */
+        getCodeModal: function(courseid) {
+            AJAX.call([{
+                methodname: 'block_enrolcode_form',
+                args: { 'courseid': courseid },
+                done: function(result) {
+                    STR.get_strings([
+                            {'key' : 'code:get', component: 'block_enrolcode' },
+                        ]).done(function(s) {
+                            ModalFactory.create({
+                                type: ModalFactory.types.OK,
+                                title: s[0],
+                                body: result,
+                            }).then(function(modal) {
+                                var root = modal.getRoot();
+                                root.on(ModalEvents.OK, function() {
+                                    console.log('Hiding modal');
+                                    modal.hide();
+                                });
+                                modal.show();
+                            });
+                        }
+                    ).fail(NOTIFICATION.exception);
+                },
+                fail: NOTIFICATION.exception
+            }]);
+
         },
         revokeCode: function(code) {
             var MAIN = this;

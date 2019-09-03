@@ -76,7 +76,26 @@ class block_enrolcode_lib {
                 }
             }
         }
+    }
+    /**
+     * Create the form in HTML.
+     * @param courseid the courseid the form is built for.
+     * @return the form in HTML.
+     */
+    public static function create_form($courseid) {
+        global $OUTPUT;
+        $context = context_course::instance($courseid);
+        $_roles = get_assignable_roles($context);
+        $_roleids = array_keys($_roles);
+        $roles = array();
+        for ($a = 0; $a < count($_roleids); $a++) {
+            $roles[$a] = array(
+                'id' => $_roleids[$a],
+                'name' => $_roles[$_roleids[$a]],
+            );
+        }
 
+        return $OUTPUT->render_from_template("block_enrolcode/code_get", array("courseid" => $courseid, "roles" => $roles));
     }
     /**
      * Check if the current user is enrolled in a course.

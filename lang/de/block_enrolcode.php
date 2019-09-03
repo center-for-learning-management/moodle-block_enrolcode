@@ -24,6 +24,7 @@
 $string['pluginname'] = 'EnrolByCode';
 $string['privacy:metadata'] = 'Dieses Plugin speichert keine personenbezogenen Daten';
 
+$string['code:accesscode'] = 'Zugangscode';
 $string['code:enrol'] = 'Einschreiben';
 $string['code:enter'] = 'Temporären Zugangscode eingeben';
 $string['code:get'] = 'Temporärer Zugangscode';

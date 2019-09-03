@@ -40,31 +40,20 @@ class block_enrolcode extends block_base {
         $this->title = get_string('pluginname', 'block_enrolcode');
     }
     public function get_content() {
-        global $CFG, $COURSE, $DB, $OUTPUT, $PAGE, $USER;
+        global $COURSE, $OUTPUT;
 
         if ($this->content !== null) {
             return $this->content;
         }
+        $this->content = (object) array('text' => '');
         // If course is dashboard =courseid 1 or is not enrolled in course show enter form for code
         if ($COURSE->id == 1 || !block_enrolcode_lib::is_enrolled()) {
             $this->content->text = $OUTPUT->render_from_template("block_enrolcode/code_enter", array());
         }
         // If is teacher of course show button to create a code that is displayed in a modal.
         if ($COURSE->id > 1 && block_enrolcode_lib::is_trainer()) {
-            $context = context_course::instance($COURSE->id);
-            $_roles = get_assignable_roles($context);
-            $_roleids = array_keys($_roles);
-            $roles = array();
-            for ($a = 0; $a < count($_roleids); $a++) {
-                $roles[$a] = array(
-                    'id' => $_roleids[$a],
-                    'name' => $_roles[$_roleids[$a]],
-                );
-            }
-
-            $this->content->text = $OUTPUT->render_from_template("block_enrolcode/code_get", array("courseid" => $COURSE->id, "roles" => $roles));
+            $this->content->text = block_enrolcode_lib::create_form($COURSE->id);
         }
-
 
         return $this->content;
     }
