@@ -55,7 +55,7 @@ class block_enrolcode_lib {
         $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
         if (!empty($course->id)) {
             $enrolcode = (object) array(
-                'code' => substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil(4/strlen($x)) )),1,4),
+                'code' => substr(str_shuffle(str_repeat($x='0123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ', ceil(4/strlen($x)) )),1,4),
                 'courseid' => $courseid,
                 'created' => time(),
                 'roleid' => $roleid,
@@ -139,13 +139,13 @@ class block_enrolcode_lib {
             $instances = enrol_get_instances($course->id, true);
             $manualinstance = null;
             foreach ($instances as $instance) {
-                if ($instance->name == 'manual') {
+                if ($instance->enrol == 'manual') {
                     $manualinstance = $instance;
                     break;
                 }
             }
 
-            if ($manualinstance !== null) {
+            if (empty($manualinstance->id)) {
                 $instanceid = $enrol->add_default_instance($course);
                 if ($instanceid === null) {
                     $instanceid = $enrol->add_instance($course);
