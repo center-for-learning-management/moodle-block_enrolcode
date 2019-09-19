@@ -24,6 +24,7 @@
 defined('MOODLE_INTERNAL') || die;
 
 class block_enrolcode_lib {
+    public static $create_form_courseid = 0;
     /**
      * Removes old entries from database.
      */
@@ -41,9 +42,11 @@ class block_enrolcode_lib {
      * Create a code.
      * @param courseid (optional) the courseid, defaults to COURSE->id.
      * @param roleid (optional) the roleid, defaults to 3 (student).
+     * @param custommaturity (optional) whether or not user wants a custom maturity.
+     * @param maturity (optional) the maturity to set.
      * @return the code that was stored in the database.
      */
-    public static function create_code($courseid=0, $roleid=0) {
+    public static function create_code($courseid=0, $roleid=0, $custommaturity=0, $maturity=0) {
         self::clean_db();
         global $COURSE, $DB, $USER;
         if (empty($courseid)) {
@@ -58,6 +61,7 @@ class block_enrolcode_lib {
                 'code' => substr(str_shuffle(str_repeat($x='0123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ', ceil(4/strlen($x)) )),1,4),
                 'courseid' => $courseid,
                 'created' => time(),
+                'maturity' => (!empty($custommaturity) && !empty($maturity)) ? $maturity : 0,
                 'roleid' => $roleid,
                 'userid' => $USER->id,
             );
@@ -65,7 +69,7 @@ class block_enrolcode_lib {
             $chkcode = $DB->get_record('block_enrolcode', array('code' => $enrolcode->code));
             if (!empty($chkcode->id)) {
                 // Code already exists - we need another code.
-                return self::create_code($courseid, $roleid);
+                return self::create_code($courseid, $roleid, $custommaturity, $maturity);
             } else {
                 // We can store that code.
                 $id = $DB->insert_record('block_enrolcode', $enrolcode, true);
@@ -83,7 +87,13 @@ class block_enrolcode_lib {
      * @return the form in HTML.
      */
     public static function create_form($courseid) {
+        self::$create_form_courseid = $courseid;
+        require_once(__DIR__ . '/classes/code_form.php');
+        $codeform = new code_form(null, null, 'post', '_self', array('class' => 'enrolcode'), true);
+        return $codeform->render();
+
         global $OUTPUT;
+        /*
         $context = context_course::instance($courseid);
         $_roles = get_assignable_roles($context);
         $_roleids = array_keys($_roles);
@@ -94,8 +104,8 @@ class block_enrolcode_lib {
                 'name' => $_roles[$_roleids[$a]],
             );
         }
-
-        return $OUTPUT->render_from_template("block_enrolcode/code_get", array("courseid" => $courseid, "roles" => $roles));
+        */
+        //return $OUTPUT->render_from_template("block_enrolcode/code_get", array("courseid" => $courseid, "roles" => $roles));
     }
     /**
      * Check if the current user is enrolled in a course.
@@ -126,8 +136,15 @@ class block_enrolcode_lib {
         self::clean_db();
         global $DB, $USER;
 
+        // We remove any mature enrolcodes.
+        $sql = "DELETE FROM {block_enrolcode}
+                    WHERE (maturity>0 AND maturity<?)
+                        OR (maturity=0 AND created>?)";
+        $DB->execute($sql, array(time(), self::clean_ts()));
+
+        // After this line we only have valid enrolcodes!
         $enrolcode = $DB->get_record('block_enrolcode', array('code' => $code));
-        if (!empty($enrolcode->created) && $enrolcode->created > self::clean_ts()) {
+        if (!empty($enrolcode->id)) {
             // Code is valid.
             $course = $DB->get_record('course', array('id' => $enrolcode->courseid), '*', MUST_EXIST);
             $context = context_course::instance($course->id);
@@ -167,6 +184,11 @@ class block_enrolcode_lib {
         self::clean_db();
         global $DB, $USER;
 
-        $DB->delete_records('block_enrolcode', array('code' => $code));
+        $enrolcode = $DB->get_record('block_enrolcode', array('code' => $code));
+
+        if (empty($enrolcode->maturity)) {
+            // We only revoke manually if we have no maturity.
+            $DB->delete_records('block_enrolcode', array('code' => $code));
+        }
     }
 }

@@ -25,7 +25,7 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->dirroot . '/blocks/moodleblock.class.php');
-require_once($CFG->dirroot . '/blocks/enrolcode/lib.php');
+require_once(__DIR__ . '/lib.php');
 
 class block_enrolcode extends block_base {
     /**
@@ -40,7 +40,9 @@ class block_enrolcode extends block_base {
         $this->title = get_string('pluginname', 'block_enrolcode');
     }
     public function get_content() {
-        global $COURSE, $OUTPUT;
+        global $COURSE, $OUTPUT, $PAGE;
+
+        $PAGE->requires->css('/blocks/enrolcode/style/enrolcode.css');
 
         if ($this->content !== null) {
             return $this->content;

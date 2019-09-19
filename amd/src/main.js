@@ -6,16 +6,25 @@ define(
          * Get a code for fast enrolment.
          * @param uniqid of form
          */
-        getCode: function(uniqid) {
+        getCode: function(src) {
             var MAIN = this;
-            console.log('MAIN.getCode(uniqid)', uniqid);
+            console.log('MAIN.getCode(src)', src);
 
-            var courseid = $('#courseid-' + uniqid).val();
-            var roleid = $('#roleid-' + uniqid).val();
-            //console.log({ 'courseid': courseid, 'roleid': roleid });
+            var form = $(src).closest('form');
+
+            var courseid = +$(form).find('[name="courseid"]').val();
+            var roleid = +$(form).find('[name="roleid"]').val();
+            var custommaturity = +$(form).find('[name="custommaturity"]').val();
+            var maturity = new Date();
+            maturity.setDate($(form).find('#id_maturity_day').val());
+            maturity.setMonth($(form).find('#id_maturity_month').val());
+            maturity.setYear($(form).find('#id_maturity_year').val());
+            maturity.setHours($(form).find('#id_maturity_hour').val());
+            maturity.setMinutes($(form).find('#id_maturity_minute').val());
+            console.log({ 'courseid': courseid, 'roleid': roleid, custommaturity: custommaturity, maturity: Math.ceil(maturity.getTime()/1000) });
             AJAX.call([{
                 methodname: 'block_enrolcode_get',
-                args: { 'courseid': courseid, 'roleid': roleid },
+                args: { 'courseid': courseid, 'roleid': roleid, custommaturity: custommaturity, maturity: Math.ceil(maturity.getTime()/1000) },
                 done: function(result) {
                     if (result != '' && result != null) {
                         // We got the code return it!

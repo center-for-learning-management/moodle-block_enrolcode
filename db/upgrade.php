@@ -21,20 +21,23 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'EnrolByCode';
-$string['privacy:metadata'] = 'This plugin does not store any personal data';
+defined('MOODLE_INTERNAL') || die;
 
-$string['code:accesscode'] = 'Accesscode';
-$string['code:enrol'] = 'enrol';
-$string['code:enter'] = 'Enter temporary accesscode (as provided by your trainer)';
-$string['code:get'] = 'Temporary accesscode';
-$string['code:get:error'] = 'Error creating temporary accesscode';
+function xmldb_block_enrolcode_upgrade($oldversion=0) {
+    global $DB;
+    $dbman = $DB->get_manager();
 
-$string['custommaturity'] = 'Custom Maturity';
+    if ($oldversion < 2019091900) {
+        // Define table block_edupublisher_comments to be created.
+        $table = new xmldb_table('block_enrolcode');
+        $field = new xmldb_field('maturity', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'created');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
 
-$string['enrolcode:addinstance'] = 'Add enrolcode-Block';
-$string['enrolcode:myaddinstance'] = 'Add enrolcode-Block to Dashboard';
+        // savepoint reached.
+        upgrade_block_savepoint(true, 2019091900, 'enrolcode');
+    }
 
-$string['finished'] = 'Finished';
-
-$string['maturity'] = 'Maturity';
+    return true;
+}

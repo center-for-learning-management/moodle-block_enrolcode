@@ -30,4 +30,8 @@ $string['code:enter'] = 'Temporären Zugangscode eingeben (wird von der Lehrpers
 $string['code:get'] = 'Temporärer Zugangscode';
 $string['code:get:error'] = 'Fehler bei der Erstellung des temporären Zugangscodes.';
 
+$string['custommaturity'] = 'Eigenes Ablaufdatum';
+
 $string['finished'] = 'Fertig';
+
+$string['maturity'] = 'Ablaufdatum';

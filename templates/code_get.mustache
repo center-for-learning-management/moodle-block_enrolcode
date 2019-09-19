@@ -24,6 +24,8 @@
     <option value="{{id}}">{{#name}} {{name}} {{/name}} {{^name}} {{shortname}} {{/name}}</option>
     {{/roles}}
 </select>
+
+</form>
+
 <a href="#" class="btn btn-secondary"
     onclick="require(['block_enrolcode/main'], function(MAIN) { MAIN.getCode('{{uniqid}}'); }); return false;">{{#str}} show {{/str}}</a>
-</form>
