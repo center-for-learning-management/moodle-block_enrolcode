@@ -18,8 +18,12 @@
 {{< core/modal }}
     {{$title}}{{#str}} code:get, block_enrolcode {{/str}}{{/title}}
     {{$body}}
-        <div class="container">
-            <h1 style="text-align: center;" id="code">{{code}}</h1>
+        <div class="container" style="text-align: center;">
+            <h1 id="code">{{code}}</h1>
+            <img src="" alt="QR Code" id="qrcode" />
+            <div style="width: 100%;">
+                <input type="text" id="enrolurl" readonly style="width: 100%;">
+            </div>
         </div>
     {{/body}}
     {{$footer}}

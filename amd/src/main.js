@@ -3,10 +3,17 @@ define(
     function($, AJAX, NOTIFICATION, STR, TEMPLATES, URL, ModalEvents, ModalFactory, ModalCode, ModalEnter) {
     return {
         /**
+         * Generate the URL for enrolment.
+         */
+        generateEnrolURL: function(code) {
+            return URL.relativeUrl('/blocks/enrolcode/enrol.php?code=' + code);
+        },
+        /**
          * Get a code for fast enrolment.
          * @param uniqid of form
          */
         getCode: function(src) {
+            this.injectCSS();
             var MAIN = this;
             console.log('MAIN.getCode(src)', src);
 
@@ -14,7 +21,7 @@ define(
 
             var courseid = +$(form).find('[name="courseid"]').val();
             var roleid = +$(form).find('[name="roleid"]').val();
-            var custommaturity = +$(form).find('[name="custommaturity"]').val();
+            var custommaturity = $(form).find('[name="custommaturity"]').is(":checked") ? 1 : 0;
             var maturity = new Date();
             maturity.setDate($(form).find('#id_maturity_day').val());
             maturity.setMonth($(form).find('#id_maturity_month').val());
@@ -34,6 +41,8 @@ define(
                         }).then(function(modal) {
                             var root = modal.getRoot();
                             $(root).find('#code').html(result);
+                            $(root).find('#enrolurl').val(MAIN.generateEnrolURL(result));
+                            $(root).find('#qrcode').attr('src', URL.relativeUrl('/blocks/enrolcode/pix/qr.php?format=base64&txt=' + btoa(MAIN.generateEnrolURL(result))));
                             modal.show();
                         });
                     } else {
@@ -55,6 +64,7 @@ define(
          * @param courseid the courseid we need the modal for.
          */
         getCodeModal: function(courseid) {
+            this.injectCSS();
             AJAX.call([{
                 methodname: 'block_enrolcode_form',
                 args: { 'courseid': courseid },
@@ -79,9 +89,15 @@ define(
                 },
                 fail: NOTIFICATION.exception
             }]);
-
+        },
+        injectCSS: function() {
+            if ($('head>link[href$="/blocks/enrolcode/style/enrolcode.css"]').length == 0) {
+                console.log('Adding CSS File ', URL.relativeUrl('/blocks/enrolcode/style/enrolcode.css'));
+                $('head').append($('<link rel="stylesheet" type="text/css" href="' + URL.relativeUrl('/blocks/enrolcode/style/enrolcode.css') + '">'));
+            }
         },
         revokeCode: function(code) {
+            this.injectCSS();
             var MAIN = this;
             console.log('MAIN.revokeCode(code)', code);
 
@@ -100,6 +116,7 @@ define(
          * @param code the code directly
          */
         sendCode: function(uniqid, code) {
+            this.injectCSS();
             var MAIN = this;
             console.log('MAIN.sendCode(uniqid, code)', uniqid, code);
             if (typeof uniqid !== 'undefined' && uniqid != '') {
@@ -131,11 +148,27 @@ define(
          * Show the form to enter a code in a modal.
          */
         sendCodeModal: function() {
+            this.injectCSS();
             ModalFactory.create({
                 type: ModalEnter.TYPE
             }).then(function(modal) {
                 modal.show();
             });
         },
+        /**
+         * Share URL via a social network.
+         * @param src The button that was pressed.
+         */
+        shareCode: function(src) {
+            console.log('MAIN.shareCode(src)', src);
+            var target = $(src).attr('data-target');
+            var code = $(src).closest('.container').find('#code').html();
+            var enrolurl = MAIN.generateEnrolURL(code);
+            switch (target) {
+                case 'facebook':
+                    window.open('https://www.facebook.com/sharer.php?u=' + encodeURI(enrolurl));
+                break;
+            }
+        }
     };
 });

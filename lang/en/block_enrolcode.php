@@ -26,12 +26,16 @@ $string['privacy:metadata'] = 'This plugin does not store any personal data';
 
 $string['code:accesscode'] = 'Accesscode';
 $string['code:enrol'] = 'enrol';
+$string['code:enrol:error'] = 'Accesscode did not work.';
 $string['code:enter'] = 'Enter temporary accesscode (as provided by your trainer)';
 $string['code:get'] = 'Temporary accesscode';
 $string['code:get:error'] = 'Error creating temporary accesscode';
+$string['copied'] = 'copied';
+
 
 $string['custommaturity'] = 'Custom Maturity';
 
+$string['enrol:success:redirect'] = 'Successfully joined course. You will be redirected to the course immediately.';
 $string['enrolcode:addinstance'] = 'Add enrolcode-Block';
 $string['enrolcode:myaddinstance'] = 'Add enrolcode-Block to Dashboard';
 

@@ -30,7 +30,11 @@ class block_enrolcode_lib {
      */
     public static function clean_db() {
         global $DB;
-        $DB->execute("DELETE FROM {block_enrolcode} WHERE created<?", array(self::clean_ts()));
+        // We remove any mature enrolcodes.
+        $sql = "DELETE FROM {block_enrolcode}
+                    WHERE (maturity>0 AND maturity<?)
+                        OR (maturity=0 AND created<?)";
+        $DB->execute($sql, array(time(), self::clean_ts()));
     }
     /**
      * Returns the timestamp for checking the validity.
@@ -56,7 +60,7 @@ class block_enrolcode_lib {
             $roleid = 3;
         }
         $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
-        if (!empty($course->id)) {
+        if (!empty($course->id) && self::is_trainer($courseid)) {
             $enrolcode = (object) array(
                 'code' => substr(str_shuffle(str_repeat($x='0123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ', ceil(4/strlen($x)) )),1,4),
                 'courseid' => $courseid,
@@ -79,6 +83,8 @@ class block_enrolcode_lib {
                     return '';
                 }
             }
+        } else {
+            return '';
         }
     }
     /**
@@ -89,7 +95,7 @@ class block_enrolcode_lib {
     public static function create_form($courseid) {
         self::$create_form_courseid = $courseid;
         require_once(__DIR__ . '/classes/code_form.php');
-        $codeform = new code_form(null, null, 'post', '_self', array('class' => 'enrolcode'), true);
+        $codeform = new code_form(null, null, 'post', '_self', array('class' => 'ui-enrolcode'), true);
         return $codeform->render();
 
         global $OUTPUT;
@@ -136,13 +142,6 @@ class block_enrolcode_lib {
         self::clean_db();
         global $DB, $USER;
 
-        // We remove any mature enrolcodes.
-        $sql = "DELETE FROM {block_enrolcode}
-                    WHERE (maturity>0 AND maturity<?)
-                        OR (maturity=0 AND created>?)";
-        $DB->execute($sql, array(time(), self::clean_ts()));
-
-        // After this line we only have valid enrolcodes!
         $enrolcode = $DB->get_record('block_enrolcode', array('code' => $code));
         if (!empty($enrolcode->id)) {
             // Code is valid.

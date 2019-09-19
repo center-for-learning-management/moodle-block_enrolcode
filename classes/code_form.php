@@ -49,7 +49,8 @@ class code_form extends moodleform {
         $roles = get_assignable_roles($context);
         $mform->addElement('select', 'roleid', get_string('role'), $roles);
 
-        $mform->addElement('checkbox', 'custommaturity', get_string('custommaturity', 'block_enrolcode'));
+        $onclick = 'require(["jquery"], function($) { var inp = $("[data-uniqid=\'custommaturity-' . $uniqid . '\']"); inp.closest("form").find("#id_maturity_day").closest(".row.fitem").css("display", $(inp).is(":checked") ? "block" : "none"); });';
+        $mform->addElement('checkbox', 'custommaturity', get_string('custommaturity', 'block_enrolcode'), NULL, array('data-uniqid' => 'custommaturity-' . $uniqid, 'onclick' => $onclick));
         $mform->setType('custommaturity', PARAM_INT);
 
         $utime = new DateTime("now", core_date::get_user_timezone_object());
@@ -63,9 +64,12 @@ class code_form extends moodleform {
             );
         $mform->addElement('date_time_selector', 'maturity', get_string('maturity', 'block_enrolcode'), $startendargs);
 
-        $mform->hideIf('maturity', 'custommaturity', 'notchecked');
-
         $mform->addElement('html', "<a href=\"#\" class=\"btn btn-secondary\" onclick=\"var btn = this; require(['block_enrolcode/main'], function(MAIN) { MAIN.getCode(btn); }); return false;\">" . get_string('create') . "</a>");
+
+        // Unfortunately this does not work in modal, therefore afterwards we do it manually.
+        $mform->hideIf('maturity', 'custommaturity', 'notchecked');
+        // Next line hides dateselector in modal.
+        $mform->addElement('html', '<script type="text/javascript"> ' . $onclick . '; $("[data-uniqid=\'custommaturity-' . $uniqid . '\']").closest("form").find("#id_maturity_calendar").remove(); </script>');
 
         $mform->disable_form_change_checker();
     }

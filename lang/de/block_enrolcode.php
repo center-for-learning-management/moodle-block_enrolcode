@@ -26,11 +26,16 @@ $string['privacy:metadata'] = 'Dieses Plugin speichert keine personenbezogenen D
 
 $string['code:accesscode'] = 'Zugangscode';
 $string['code:enrol'] = 'Einschreiben';
+$string['code:enrol:error'] = 'Der Zugangscode hat nicht funktioniert.';
 $string['code:enter'] = 'Temporären Zugangscode eingeben (wird von der Lehrperson bekanntgegeben)';
 $string['code:get'] = 'Temporärer Zugangscode';
 $string['code:get:error'] = 'Fehler bei der Erstellung des temporären Zugangscodes.';
+$string['copied'] = 'in Zwischenablage kopiert';
+
 
 $string['custommaturity'] = 'Eigenes Ablaufdatum';
+
+$string['enrol:success:redirect'] = 'Sie sind dem Kurs erfolgreich beigetreten und werden nun direkt weitergeleitet!';
 
 $string['finished'] = 'Fertig';
 
