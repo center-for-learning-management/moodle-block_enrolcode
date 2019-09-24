@@ -132,7 +132,7 @@ class block_enrolcode_lib {
      * @param courseid (optional) if not given use the id from COURSE
      */
     public static function is_trainer($courseid = 0) {
-        return self::is_enrolled($courseid, "enrol/manual:manage");
+        return self::is_enrolled($courseid, "enrol/manual:manage") || has_capability('moodle/site:config', context_system::instance());
     }
 
     /**
@@ -142,38 +142,42 @@ class block_enrolcode_lib {
         self::clean_db();
         global $DB, $USER;
 
-        $enrolcode = $DB->get_record('block_enrolcode', array('code' => $code));
-        if (!empty($enrolcode->id)) {
-            // Code is valid.
-            $course = $DB->get_record('course', array('id' => $enrolcode->courseid), '*', MUST_EXIST);
-            $context = context_course::instance($course->id);
-
-            $enrol = enrol_get_plugin('manual');
-            if ($enrol === null) {
-                return false;
-            }
-            $instances = enrol_get_instances($course->id, true);
-            $manualinstance = null;
-            foreach ($instances as $instance) {
-                if ($instance->enrol == 'manual') {
-                    $manualinstance = $instance;
-                    break;
-                }
-            }
-
-            if (empty($manualinstance->id)) {
-                $instanceid = $enrol->add_default_instance($course);
-                if ($instanceid === null) {
-                    $instanceid = $enrol->add_instance($course);
-                }
-                $instance = $DB->get_record('enrol', array('id' => $instanceid));
-            }
-
-            $enrol->enrol_user($instance, $USER->id, $enrolcode->roleid);
-
-            return $enrolcode->courseid;
-        } else {
+        if(!isloggedin() || isguestuser($USER)) {
             return 0;
+        } else {
+            $enrolcode = $DB->get_record('block_enrolcode', array('code' => $code));
+            if (!empty($enrolcode->id)) {
+                // Code is valid.
+                $course = $DB->get_record('course', array('id' => $enrolcode->courseid), '*', MUST_EXIST);
+                $context = context_course::instance($course->id);
+
+                $enrol = enrol_get_plugin('manual');
+                if ($enrol === null) {
+                    return false;
+                }
+                $instances = enrol_get_instances($course->id, true);
+                $manualinstance = null;
+                foreach ($instances as $instance) {
+                    if ($instance->enrol == 'manual') {
+                        $manualinstance = $instance;
+                        break;
+                    }
+                }
+
+                if (empty($manualinstance->id)) {
+                    $instanceid = $enrol->add_default_instance($course);
+                    if ($instanceid === null) {
+                        $instanceid = $enrol->add_instance($course);
+                    }
+                    $instance = $DB->get_record('enrol', array('id' => $instanceid));
+                }
+
+                $enrol->enrol_user($instance, $USER->id, $enrolcode->roleid);
+
+                return $enrolcode->courseid;
+            } else {
+                return 0;
+            }
         }
     }
     /**

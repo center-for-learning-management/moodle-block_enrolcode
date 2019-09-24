@@ -27,6 +27,7 @@ $string['privacy:metadata'] = 'This plugin does not store any personal data';
 $string['code:accesscode'] = 'Accesscode';
 $string['code:enrol'] = 'enrol';
 $string['code:enrol:error'] = 'Accesscode did not work.';
+$string['code:enrol:guesterror'] = 'You need to login before you can use the accesscode.';
 $string['code:enter'] = 'Enter temporary accesscode (as provided by your trainer)';
 $string['code:get'] = 'Temporary accesscode';
 $string['code:get:error'] = 'Error creating temporary accesscode';

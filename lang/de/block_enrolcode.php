@@ -27,6 +27,7 @@ $string['privacy:metadata'] = 'Dieses Plugin speichert keine personenbezogenen D
 $string['code:accesscode'] = 'Zugangscode';
 $string['code:enrol'] = 'Einschreiben';
 $string['code:enrol:error'] = 'Der Zugangscode hat nicht funktioniert.';
+$string['code:enrol:guesterror'] = 'Sie müssen sich anmelden, bevor Sie den Code verwenden können.';
 $string['code:enter'] = 'Temporären Zugangscode eingeben (wird von der Lehrperson bekanntgegeben)';
 $string['code:get'] = 'Temporärer Zugangscode';
 $string['code:get:error'] = 'Fehler bei der Erstellung des temporären Zugangscodes.';

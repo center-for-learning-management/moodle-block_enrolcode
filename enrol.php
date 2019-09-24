@@ -12,22 +12,33 @@ $PAGE->set_url('/blocks/enrolcode/enrol.php', array('code' => $code));
 $PAGE->set_title(get_string('code:accesscode', 'block_enrolcode'));
 $PAGE->set_heading(get_string('code:accesscode', 'block_enrolcode'));
 
-$courseid = block_enrolcode_lib::enrol_by_code($code);
-if (!empty($courseid)) {
-    redirect($CFG->wwwroot . '/course/view.php?id=' . $courseid);
-    echo $OUTPUT->header();
-    echo $OUTPUT->render_from_template('block_enrolcode/alert', array(
-        'type' => 'success',
-        'content' => get_string('enrol:success:redirect', 'block_enrolcode'),
-        'url' => $CFG->wwwroot . '/course/view.php?id=' . $courseid,
-    ));
-    echo $OUTPUT->footer();
-} else {
+if (!isloggedin() || isguestuser($USER)) {
+    $SESSION->wantsurl = $PAGE->url;
     echo $OUTPUT->header();
     echo $OUTPUT->render_from_template('block_enrolcode/alert', array(
         'type' => 'danger',
-        'content' => get_string('code:enrol:error', 'block_enrolcode'),
-        'url' => $CFG->wwwroot . '/my',
+        'content' => get_string('code:enrol:guesterror', 'block_enrolcode'),
+        'url' => $CFG->wwwroot . '/login/index.php',
     ));
     echo $OUTPUT->footer();
+} else {
+    $courseid = block_enrolcode_lib::enrol_by_code($code);
+    if (!empty($courseid)) {
+        redirect($CFG->wwwroot . '/course/view.php?id=' . $courseid);
+        echo $OUTPUT->header();
+        echo $OUTPUT->render_from_template('block_enrolcode/alert', array(
+            'type' => 'success',
+            'content' => get_string('enrol:success:redirect', 'block_enrolcode'),
+            'url' => $CFG->wwwroot . '/course/view.php?id=' . $courseid,
+        ));
+        echo $OUTPUT->footer();
+    } else {
+        echo $OUTPUT->header();
+        echo $OUTPUT->render_from_template('block_enrolcode/alert', array(
+            'type' => 'danger',
+            'content' => get_string('code:enrol:error', 'block_enrolcode'),
+            'url' => $CFG->wwwroot . '/my',
+        ));
+        echo $OUTPUT->footer();
+    }
 }
