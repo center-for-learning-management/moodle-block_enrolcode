@@ -13,7 +13,7 @@ $PAGE->set_title(get_string('code:accesscode', 'block_enrolcode'));
 $PAGE->set_heading(get_string('code:accesscode', 'block_enrolcode'));
 
 if (!isloggedin() || isguestuser($USER)) {
-    $SESSION->wantsurl = $PAGE->url;
+    $SESSION->wantsurl = $PAGE->url . '#'; // This should prevent that wantsurl is an object instead of string!
     echo $OUTPUT->header();
     echo $OUTPUT->render_from_template('block_enrolcode/alert', array(
         'type' => 'danger',
