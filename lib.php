@@ -195,3 +195,13 @@ class block_enrolcode_lib {
         }
     }
 }
+
+
+function block_enrolcode_before_standard_html_head() {
+    global $PAGE;
+    if (strpos($_SERVER["SCRIPT_FILENAME"], '/user/index.php') > 0) {
+        $courseid = optional_param('id', 0, PARAM_INT);
+        $PAGE->requires->js_call_amd('block_enrolcode/main', 'injectButton', array($courseid));
+    }
+    return "";
+}

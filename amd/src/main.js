@@ -90,6 +90,20 @@ define(
                 fail: NOTIFICATION.exception
             }]);
         },
+        /**
+         * Let's inject a button on the enrol users page.
+         */
+        injectButton: function(courseid) {
+            if (typeof courseid === 'undefined' || courseid <= 1) return;
+            STR.get_strings([
+                    {'key' : 'code:get', component: 'block_enrolcode' },
+                ]).done(function(s) {
+                    $('#page-content div.enrolusersbutton').parent().prepend(
+                        $('<a href="#" onclick="require([\'block_enrolcode/main\'], function(MAIN) { MAIN.getCodeModal(' + courseid + '); }); return false;" class="btn btn-secondary">' + s[0] + '</a>')
+                    );
+                }
+            ).fail(NOTIFICATION.exception);
+        },
         injectCSS: function() {
             if ($('head>link[href$="/blocks/enrolcode/style/enrolcode.css"]').length == 0) {
                 console.log('Adding CSS File ', URL.relativeUrl('/blocks/enrolcode/style/enrolcode.css'));
