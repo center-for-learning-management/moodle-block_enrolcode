@@ -24,7 +24,7 @@ define(
             var custommaturity = $(form).find('[name="custommaturity"]').is(":checked") ? 1 : 0;
             var maturity = new Date();
             maturity.setDate($(form).find('#id_maturity_day').val());
-            maturity.setMonth($(form).find('#id_maturity_month').val());
+            maturity.setMonth($(form).find('#id_maturity_month').val()-1);
             maturity.setYear($(form).find('#id_maturity_year').val());
             maturity.setHours($(form).find('#id_maturity_hour').val());
             maturity.setMinutes($(form).find('#id_maturity_minute').val());
