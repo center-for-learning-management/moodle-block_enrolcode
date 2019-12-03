@@ -22,13 +22,15 @@ define(
             var courseid = +$(form).find('[name="courseid"]').val();
             var roleid = +$(form).find('[name="roleid"]').val();
             var custommaturity = $(form).find('[name="custommaturity"]').is(":checked") ? 1 : 0;
-            var maturity = new Date();
-            maturity.setDate($(form).find('#id_maturity_day').val());
-            maturity.setMonth($(form).find('#id_maturity_month').val()-1);
-            maturity.setYear($(form).find('#id_maturity_year').val());
-            maturity.setHours($(form).find('#id_maturity_hour').val());
-            maturity.setMinutes($(form).find('#id_maturity_minute').val());
-            console.log({ 'courseid': courseid, 'roleid': roleid, custommaturity: custommaturity, maturity: Math.ceil(maturity.getTime()/1000) });
+            var maturity = new Date(
+                $(form).find('#id_maturity_year').val(),
+                $(form).find('#id_maturity_month').val() - 1, // JavaScript starts with January = 0
+                $(form).find('#id_maturity_day').val(),
+                $(form).find('#id_maturity_hour').val(),
+                $(form).find('#id_maturity_minute').val(),
+                0,
+                0);
+            console.log({ 'courseid': courseid, 'roleid': roleid, custommaturity: custommaturity, maturity: Math.ceil(maturity.getTime()/1000), readable: maturity });
             AJAX.call([{
                 methodname: 'block_enrolcode_get',
                 args: { 'courseid': courseid, 'roleid': roleid, custommaturity: custommaturity, maturity: Math.ceil(maturity.getTime()/1000) },
