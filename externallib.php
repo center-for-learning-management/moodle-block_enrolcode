@@ -24,7 +24,7 @@
 defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir . "/externallib.php");
-require_once($CFG->dirroot . "/blocks/enrolcode/lib.php");
+require_once($CFG->dirroot . "/blocks/enrolcode/locallib.php");
 
 class block_enrolcode_external extends external_api {
     public static function form_parameters() {

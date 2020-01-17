@@ -1,7 +1,7 @@
 <?php
 
 require_once('../../config.php');
-require_once($CFG->dirroot . '/blocks/enrolcode/lib.php');
+require_once($CFG->dirroot . '/blocks/enrolcode/locallib.php');
 require_login();
 
 $code = required_param('code', PARAM_TEXT);

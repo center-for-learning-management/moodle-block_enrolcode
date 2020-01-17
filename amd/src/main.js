@@ -112,6 +112,25 @@ define(
                 $('head').append($('<link rel="stylesheet" type="text/css" href="' + URL.relativeUrl('/blocks/enrolcode/style/enrolcode.css') + '">'));
             }
         },
+        /**
+         * Let's inject a button to enter a code directly in users main menu.
+         */
+        injectMainmenuButton: function() {
+            STR.get_strings([
+                    {'key' : 'code:accesscode', component: 'block_enrolcode' },
+                ]).done(function(s) {
+                    $('.usermenu .dropdown a[href$="/user/preferences.php"]').after(
+                        $('<a>').attr('href', '#').attr('onclick', 'require([\'block_enrolcode/main\'], function(MAIN) { MAIN.sendCodeModal(); }); return false;')
+                                .addClass('dropdown-item menu-action').attr('role', 'menuitem')
+                                .attr('data-title', 'moodle,accesscard').attr('aria-labelledby', 'actionmenuaction-accesscard')
+                                .attr('data-ajax', 'false').append([
+                                    $('<i>').addClass('icon fa fa-key fa-fw').attr('aria-hidden', 'true'),
+                                    $('<span>').addClass('menu-action-text').attr('id', 'actionmenuaction-accesscard').html(s[0]),
+                                ])
+                    );
+                }
+            ).fail(NOTIFICATION.exception);
+        },
         revokeCode: function(code) {
             this.injectCSS();
             var MAIN = this;

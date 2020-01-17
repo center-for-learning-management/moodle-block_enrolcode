@@ -24,7 +24,7 @@
 defined('MOODLE_INTERNAL') || die;
 global $CFG;
 require_once($CFG->libdir . "/formslib.php");
-require_once($CFG->dirroot . "/mod/confman/lib.php");
+require_once($CFG->dirroot . "/blocks/enrolcode/locallib.php");
 
 class code_form extends moodleform {
     static $accepted_types = '';
