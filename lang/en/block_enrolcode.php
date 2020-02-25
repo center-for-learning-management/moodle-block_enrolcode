@@ -37,8 +37,8 @@ $string['copied'] = 'copied';
 $string['custommaturity'] = 'Expiration period';
 
 $string['enrol:success:redirect'] = 'Successfully joined course. You will be redirected to the course immediately.';
-$string['enrolcode:addinstance'] = 'Add enrolcode-Block';
-$string['enrolcode:myaddinstance'] = 'Add enrolcode-Block to Dashboard';
+$string['enrolcode:addinstance'] = 'Add EnrolByCode-Block';
+$string['enrolcode:myaddinstance'] = 'Add EnrolByCode-Block to Dashboard';
 
 $string['finished'] = 'Finished';
 
