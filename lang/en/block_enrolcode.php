@@ -34,7 +34,7 @@ $string['code:get:error'] = 'Error creating temporary accesscode';
 $string['copied'] = 'copied';
 
 
-$string['custommaturity'] = 'Custom Maturity';
+$string['custommaturity'] = 'Expiration period';
 
 $string['enrol:success:redirect'] = 'Successfully joined course. You will be redirected to the course immediately.';
 $string['enrolcode:addinstance'] = 'Add enrolcode-Block';
