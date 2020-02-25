@@ -1,6 +1,8 @@
 <?php
 
 require_once('../../config.php');
+sesskey();
+
 require_once($CFG->dirroot . '/blocks/enrolcode/locallib.php');
 require_login();
 
