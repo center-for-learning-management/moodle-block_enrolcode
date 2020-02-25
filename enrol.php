@@ -4,7 +4,7 @@ require_once('../../config.php');
 require_once($CFG->dirroot . '/blocks/enrolcode/locallib.php');
 require_login();
 
-$code = required_param('code', PARAM_TEXT);
+$code = required_param('code', PARAM_ALPHANUM);
 
 $PAGE->set_context(context_system::instance());
 $PAGE->set_pagelayout('standard');

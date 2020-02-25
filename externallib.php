@@ -74,12 +74,12 @@ class block_enrolcode_external extends external_api {
      * @return external_value
      */
     public static function get_returns() {
-        return new external_value(PARAM_TEXT, 'The temporary accesscode.');
+        return new external_value(PARAM_ALPHANUM, 'The temporary accesscode.');
     }
 
     public static function revoke_parameters() {
         return new external_function_parameters(array(
-            'code' => new external_value(PARAM_TEXT, 'The temporary accesscode'),
+            'code' => new external_value(PARAM_ALPHANUM, 'The temporary accesscode'),
         ));
     }
 
@@ -103,7 +103,7 @@ class block_enrolcode_external extends external_api {
 
     public static function send_parameters() {
         return new external_function_parameters(array(
-            'code' => new external_value(PARAM_TEXT, 'The temporary accesscode'),
+            'code' => new external_value(PARAM_ALPHANUM, 'The temporary accesscode'),
         ));
     }
 
