@@ -1,3 +1,13 @@
+/*
+ * @package    block_enrolcode
+ * @copyright  2020 Center for learning management (www.lernmanagement.at)
+ * @author     Robert Schrenk
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+ /**
+  * @module block_enrolcode/modal_code
+  */
 define(['jquery', 'core/notification', 'core/custom_interaction_events', 'core/modal', 'core/modal_registry'],
         function($, Notification, CustomEvents, Modal, ModalRegistry) {
 
