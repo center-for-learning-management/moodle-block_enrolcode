@@ -46,7 +46,7 @@
             // Add your logic for when the login button is clicked. This could include the form validation,
             // loading animations, error handling etc.
             var code = $(this.getRoot()).find('#code').val();
-            require(['block_enrolcode/main'], function(MAIN) { MAIN.sendCode('', code); } ); return false;
+            require(['block_enrolcode/main'], function(MAIN) { MAIN.sendCode('', code); } );
             console.log(this);
             this.hide();
         }.bind(this));
