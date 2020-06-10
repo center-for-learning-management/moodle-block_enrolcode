@@ -26,5 +26,5 @@ defined('MOODLE_INTERNAL') || die;
 $plugin->version  = 2020061000;
 $plugin->requires = 2014051200;
 $plugin->component = 'block_enrolcode';
-$plugin->release = '1.1 (Build: 2020061000)';
+$plugin->release = '1.2 (Build: 2020061000)';
 $plugin->maturity = MATURITY_STABLE;
