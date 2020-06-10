@@ -41,3 +41,6 @@ $string['enrol:success:redirect'] = 'Sie sind dem Kurs erfolgreich beigetreten u
 $string['finished'] = 'Fertig';
 
 $string['maturity'] = 'Ablaufdatum';
+$string['maturity:immediately'] = 'sofort';
+
+$string['show_existing_codes'] = 'Zeige existierende Codes';

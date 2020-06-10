@@ -43,3 +43,6 @@ $string['enrolcode:myaddinstance'] = 'Add EnrolByCode-Block to Dashboard';
 $string['finished'] = 'Finished';
 
 $string['maturity'] = 'Maturity';
+$string['maturity:immediately'] = 'immediately';
+
+$string['show_existing_codes'] = 'Show existing codes';

@@ -46,11 +46,12 @@ class block_enrolcode_lib {
      * Create a code.
      * @param courseid (optional) the courseid, defaults to COURSE->id.
      * @param roleid (optional) the roleid, defaults to 3 (student).
+     * @param groupid (optional) the groupid, defaults to 0.
      * @param custommaturity (optional) whether or not user wants a custom maturity.
      * @param maturity (optional) the maturity to set.
      * @return the code that was stored in the database.
      */
-    public static function create_code($courseid=0, $roleid=0, $custommaturity=0, $maturity=0) {
+    public static function create_code($courseid=0, $roleid=0, $groupid=0, $custommaturity=0, $maturity=0) {
         self::clean_db();
         global $COURSE, $DB, $USER;
         if (empty($courseid)) {
@@ -58,6 +59,14 @@ class block_enrolcode_lib {
         }
         if (empty($roleid)) {
             $roleid = 3;
+        }
+        $groupid = intval($groupid);
+        if (!empty($groupid)) {
+            // Check if that group exists and belongs to the course!
+            $group = $DB->get_record('groups', array('id' => $groupid));
+            if (empty($group->id) || $group->courseid != $courseid) {
+                return '';
+            }
         }
         $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
         if (!empty($course->id) && self::is_trainer($courseid)) {
@@ -67,13 +76,14 @@ class block_enrolcode_lib {
                 'created' => time(),
                 'maturity' => (!empty($custommaturity) && !empty($maturity)) ? $maturity : 0,
                 'roleid' => $roleid,
+                'groupid' => $groupid,
                 'userid' => $USER->id,
             );
             // check for duplicate code.
             $chkcode = $DB->get_record('block_enrolcode', array('code' => $enrolcode->code));
             if (!empty($chkcode->id)) {
                 // Code already exists - we need another code.
-                return self::create_code($courseid, $roleid, $custommaturity, $maturity);
+                return self::create_code($courseid, $roleid, $groupid, $custommaturity, $maturity);
             } else {
                 // We can store that code.
                 $id = $DB->insert_record('block_enrolcode', $enrolcode, true);
@@ -127,7 +137,7 @@ class block_enrolcode_lib {
      */
     public static function enrol_by_code($code) {
         self::clean_db();
-        global $DB, $USER;
+        global $CFG, $DB, $USER;
 
         if(!isloggedin() || isguestuser($USER)) {
             return 0;
@@ -160,6 +170,12 @@ class block_enrolcode_lib {
                 }
 
                 $enrol->enrol_user($instance, $USER->id, $enrolcode->roleid);
+
+                if (!empty($enrolcode->groupid)) {
+                    // Add user to the usergroup in the course.
+                    require_once($CFG->dirroot . '/group/lib.php');
+                    groups_add_member($enrolcode->groupid, $USER);
+                }
 
                 return $enrolcode->courseid;
             } else {

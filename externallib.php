@@ -55,6 +55,7 @@ class block_enrolcode_external extends external_api {
         return new external_function_parameters(array(
             'courseid' => new external_value(PARAM_INT, 'id of course'),
             'roleid' => new external_value(PARAM_INT, 'id of role'),
+            'groupid' => new external_value(PARAM_INT, 'id of group'),
             'custommaturity' => new external_value(PARAM_INT, '1 if we want to set a custom maturity'),
             'maturity' => new external_value(PARAM_INT, 'the custom maturity as timestamp or 0'),
         ));
@@ -64,10 +65,10 @@ class block_enrolcode_external extends external_api {
      * Get a temporary access code.
      * @return created accesscode
      */
-    public static function get($courseid, $roleid, $custommaturity, $maturity) {
+    public static function get($courseid, $roleid, $groupid, $custommaturity, $maturity) {
         global $CFG, $DB;
-        $params = self::validate_parameters(self::get_parameters(), array('courseid' => $courseid, 'roleid' => $roleid, 'custommaturity' => $custommaturity, 'maturity' => $maturity));
-        return block_enrolcode_lib::create_code($params['courseid'], $params['roleid'], $params['custommaturity'], $params['maturity']);
+        $params = self::validate_parameters(self::get_parameters(), array('courseid' => $courseid, 'roleid' => $roleid, 'groupid' => $groupid, 'custommaturity' => $custommaturity, 'maturity' => $maturity));
+        return block_enrolcode_lib::create_code($params['courseid'], $params['roleid'], $params['groupid'], $params['custommaturity'], $params['maturity']);
     }
     /**
      * Return definition.

@@ -28,7 +28,6 @@ function xmldb_block_enrolcode_upgrade($oldversion=0) {
     $dbman = $DB->get_manager();
 
     if ($oldversion < 2019091900) {
-        // Define table block_edupublisher_comments to be created.
         $table = new xmldb_table('block_enrolcode');
         $field = new xmldb_field('maturity', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'created');
         if (!$dbman->field_exists($table, $field)) {
@@ -37,6 +36,16 @@ function xmldb_block_enrolcode_upgrade($oldversion=0) {
 
         // savepoint reached.
         upgrade_block_savepoint(true, 2019091900, 'enrolcode');
+    }
+    if ($oldversion < 2020061000) {
+        $table = new xmldb_table('block_enrolcode');
+        $field = new xmldb_field('groupid', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL, null, '0', 'roleid');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // savepoint reached.
+        upgrade_block_savepoint(true, 2020061000, 'enrolcode');
     }
 
     return true;

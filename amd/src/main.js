@@ -31,6 +31,7 @@ define(
 
             var courseid = +$(form).find('[name="courseid"]').val();
             var roleid = +$(form).find('[name="roleid"]').val();
+            var groupid = +$(form).find('[name="groupid"]').val();
             var custommaturity = $(form).find('[name="custommaturity"]').is(":checked") ? 1 : 0;
             var maturity = new Date(
                 $(form).find('#id_maturity_year').val(),
@@ -40,10 +41,10 @@ define(
                 $(form).find('#id_maturity_minute').val(),
                 0,
                 0);
-            console.log({ 'courseid': courseid, 'roleid': roleid, custommaturity: custommaturity, maturity: Math.ceil(maturity.getTime()/1000), readable: maturity });
+            console.log({ courseid: courseid, roleid: roleid, groupid: groupid, custommaturity: custommaturity, maturity: Math.ceil(maturity.getTime()/1000), readable: maturity });
             AJAX.call([{
                 methodname: 'block_enrolcode_get',
-                args: { 'courseid': courseid, 'roleid': roleid, custommaturity: custommaturity, maturity: Math.ceil(maturity.getTime()/1000) },
+                args: { courseid: courseid, roleid: roleid, groupid: groupid, custommaturity: custommaturity, maturity: Math.ceil(maturity.getTime()/1000) },
                 done: function(result) {
                     if (result != '' && result != null) {
                         // We got the code return it!
@@ -111,7 +112,9 @@ define(
                     {'key' : 'code:get', component: 'block_enrolcode' },
                 ]).done(function(s) {
                     $('#page-content div.enrolusersbutton').parent().prepend(
-                        $('<a href="#" onclick="require([\'block_enrolcode/main\'], function(MAIN) { MAIN.getCodeModal(' + courseid + '); }); return false;" class="btn btn-secondary">' + s[0] + '</a>')
+                        $('<div class="singlebutton enrolusersbutton block_enrolcode">').append(
+                            $('<a href="#" onclick="require([\'block_enrolcode/main\'], function(MAIN) { MAIN.getCodeModal(' + courseid + '); }); return false;" class="btn btn-secondary my-1">' + s[0] + '</a>')
+                        )
                     );
                 }
             ).fail(NOTIFICATION.exception);
