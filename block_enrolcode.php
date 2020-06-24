@@ -37,7 +37,7 @@ class block_enrolcode extends block_base {
         return file_exists($CFG->dirroot . '/blocks/eduvidual/block_eduvidual.php');
     }
     public function init() {
-        $this->title = get_string('pluginname', 'block_enrolcode');
+        $this->title = get_string('code:accesscode', 'block_enrolcode');
     }
     public function get_content() {
         global $COURSE, $OUTPUT, $PAGE;
