@@ -18,5 +18,8 @@
 }}
 
 <p>{{#str}} code:enter, block_enrolcode {{/str}}</p>
-<input id="code-{{uniqid}}" />
-<a href="#" class="btn btn-secondary" onclick="require(['block_enrolcode/main'], function(MAIN) { MAIN.sendCode('{{uniqid}}'); } ); return false;">{{#str}} code:enrol, block_enrolcode {{/str}}
+<input id="code-{{uniqid}}" style="max-width: 100%;" />
+<a href="#" class="btn btn-secondary"
+    onclick="require(['block_enrolcode/main'], function(MAIN) { MAIN.sendCode('{{uniqid}}'); } ); return false;">
+    {{#str}} code:enrol, block_enrolcode {{/str}}
+</a>
