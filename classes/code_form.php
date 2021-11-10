@@ -46,6 +46,19 @@ class code_form extends moodleform {
 
         $context = context_course::instance($courseid);
         $roles = get_assignable_roles($context);
+
+        $sql = "SELECT roleid id,name
+                    FROM {role_names}
+                    WHERE contextid = ?";
+        $overwrites = $DB->get_records_sql($sql, [ $context->id ]);
+
+        foreach($roles as $roleid => $role) {
+            if (!empty($overwrites[$roleid]->name)) {
+                $roles[$roleid] = $overwrites[$roleid]->name;
+            }
+        }
+        asort($roles);
+
         $mform->addElement('html', "<p>" . get_string('role') . "</p>");
         $mform->addElement('select', 'roleid', get_string('role'), $roles);
 
