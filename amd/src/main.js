@@ -12,6 +12,44 @@ define(
     ['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/templates', 'core/url', 'core/modal_events', 'core/modal_factory', 'block_enrolcode/modal_code', 'block_enrolcode/modal_enter'],
     function($, AJAX, NOTIFICATION, STR, TEMPLATES, URL, ModalEvents, ModalFactory, ModalCode, ModalEnter) {
     return {
+        debug: true,
+        /**
+         *
+         */
+        deleteCode: function(code, uniqid) {
+            AJAX.call([{
+                methodname: 'block_enrolcode_delete',
+                args: { code: code },
+                done: function(result) {
+                    if (result == '1') {
+                        // Remove code from list and close fullsize-pane.
+                        if (typeof(uniqid) !== 'undefined') {
+                            $('#block_enrolcode_old_codes-' + uniqid + ' [data-code=' + code + ']').remove();
+                            $('#enrolcode-' + uniqid).addClass('hidden');
+                        }
+                    } else {
+                        alert(result);
+                    }
+                },
+                fail: NOTIFICATION.exception
+            }]);
+        },
+        /**
+         * Show a code in full-size
+         */
+        fullsizeCode: function(uniqid, subid) {
+            if (this.debug) console.log('block_enrolcode/main::fullsizeCode(uniqid, subid)', uniqid, subid);
+            var parentid = '#enrolcode-item-' + uniqid + '-' + subid;
+            var parent = $(parentid);
+            var fields = [ 'accesscode', 'group', 'maturity', 'enrolmentend', 'role'];
+            fields.forEach(function(field) {
+                $('#enrolcode-' + uniqid + ' .' + field).html($(parentid + ' .' + field).html());
+            });
+            $('#enrolcode-' + uniqid + ' .url').attr('href', $(parentid + ' .accesscode').attr('href'));
+            $('#enrolcode-' + uniqid + ' .qr').attr('src', $(parentid + ' .qr').attr('src'));
+            //$('#enrolform-' + uniqid).addClass('hidden');
+            $('#enrolcode-' + uniqid).removeClass('hidden');
+        },
         /**
          * Generate the URL for enrolment.
          */
@@ -33,6 +71,7 @@ define(
             var roleid = +$(form).find('[name="roleid"]').val();
             var groupid = +$(form).find('[name="groupid"]').val();
             var custommaturity = $(form).find('[name="custommaturity"]').is(":checked") ? 1 : 0;
+            var chkenrolmentend = $(form).find('[name="chkenrolmentend"]').is(":checked") ? 1 : 0;
             var maturity = new Date(
                 $(form).find('#id_maturity_year').val(),
                 $(form).find('#id_maturity_month').val() - 1, // JavaScript starts with January = 0
@@ -41,16 +80,25 @@ define(
                 $(form).find('#id_maturity_minute').val(),
                 0,
                 0);
-            console.log({ courseid: courseid, roleid: roleid, groupid: groupid, custommaturity: custommaturity, maturity: Math.ceil(maturity.getTime()/1000), readable: maturity });
+            var enrolmentend = new Date(
+                $(form).find('#id_enrolmentend_year').val(),
+                $(form).find('#id_enrolmentend_month').val() - 1, // JavaScript starts with January = 0
+                $(form).find('#id_enrolmentend_day').val(),
+                $(form).find('#id_enrolmentend_hour').val(),
+                $(form).find('#id_enrolmentend_minute').val(),
+                0,
+                0);
+            var data = { courseid: courseid, roleid: roleid, groupid: groupid, custommaturity: custommaturity, maturity: Math.ceil(maturity.getTime()/1000), chkenrolmentend: chkenrolmentend, enrolmentend: Math.ceil(enrolmentend.getTime()/1000) };
+            console.log(data);
             AJAX.call([{
                 methodname: 'block_enrolcode_get',
-                args: { courseid: courseid, roleid: roleid, groupid: groupid, custommaturity: custommaturity, maturity: Math.ceil(maturity.getTime()/1000) },
+                args: data,
                 done: function(result) {
                     if (result != '' && result != null) {
                         // We got the code return it!
                         console.log('Got code', result);
                         ModalFactory.create({
-                            type: ModalCode.TYPE
+                            type: ModalCode.TYPE,
                         }).then(function(modal) {
                             var root = modal.getRoot();
                             $(root).find('#code').html(result);
@@ -89,6 +137,7 @@ define(
                                 type: ModalFactory.types.OK,
                                 title: s[0],
                                 body: result,
+                                large: true,
                             }).then(function(modal) {
                                 var root = modal.getRoot();
                                 root.on(ModalEvents.OK, function() {

@@ -47,6 +47,16 @@ function xmldb_block_enrolcode_upgrade($oldversion=0) {
         // savepoint reached.
         upgrade_block_savepoint(true, 2020061000, 'enrolcode');
     }
+    if ($oldversion < 2021111800) {
+        $table = new xmldb_table('block_enrolcode');
+        $field = new xmldb_field('enrolmentend', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'maturity');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // savepoint reached.
+        upgrade_block_savepoint(true, 2021111800, 'enrolcode');
+    }
 
     return true;
 }

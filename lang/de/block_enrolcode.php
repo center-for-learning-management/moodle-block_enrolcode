@@ -24,6 +24,7 @@
 $string['pluginname'] = 'EnrolByCode';
 $string['privacy:metadata'] = 'Dieses Plugin speichert keine personenbezogenen Daten';
 
+$string['close'] = 'Schließen';
 $string['code:accesscode'] = 'Zugangscode';
 $string['code:enrol'] = 'Einschreiben';
 $string['code:enrol:error'] = 'Der Zugangscode hat nicht funktioniert.';
@@ -34,9 +35,14 @@ $string['code:get:error'] = 'Fehler bei der Erstellung des temporären Zugangsco
 $string['copied'] = 'in Zwischenablage kopiert';
 
 
-$string['custommaturity'] = 'Eigenes Ablaufdatum';
+$string['custommaturity'] = 'Einschreibung möglich bis';
 
 $string['enrol:success:redirect'] = 'Sie sind dem Kurs erfolgreich beigetreten und werden nun direkt weitergeleitet!';
+$string['enrolcode:addinstance'] = 'EnrolByCode-Block hinzufügen';
+$string['enrolcode:myaddinstance'] = 'EnrolByCode-Block zum Dashboard hinzufügen';
+$string['enrolmentend'] = 'Einschreibung endet am';
+$string['enrolmentend:never'] = 'Nie';
+$string['enrolmentend:short'] = 'Einschreibeende';
 
 $string['finished'] = 'Fertig';
 

@@ -24,6 +24,7 @@
 $string['pluginname'] = 'EnrolByCode';
 $string['privacy:metadata'] = 'This plugin does not store any personal data';
 
+$string['close'] = 'Close';
 $string['code:accesscode'] = 'Accesscode';
 $string['code:enrol'] = 'enrol';
 $string['code:enrol:error'] = 'Accesscode did not work.';
@@ -34,11 +35,14 @@ $string['code:get:error'] = 'Error creating temporary accesscode';
 $string['copied'] = 'copied';
 
 
-$string['custommaturity'] = 'Expiration period';
+$string['custommaturity'] = 'Enrolment allowed until';
 
 $string['enrol:success:redirect'] = 'Successfully joined course. You will be redirected to the course immediately.';
 $string['enrolcode:addinstance'] = 'Add EnrolByCode-Block';
 $string['enrolcode:myaddinstance'] = 'Add EnrolByCode-Block to Dashboard';
+$string['enrolmentend'] = 'Enrolment ends at date';
+$string['enrolmentend:never'] = 'Never';
+$string['enrolmentend:short'] = 'End of enrolment';
 
 $string['finished'] = 'Finished';
 

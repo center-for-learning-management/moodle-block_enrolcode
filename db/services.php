@@ -25,6 +25,14 @@ defined('MOODLE_INTERNAL') || die;
 
 // We define the web service functions to install.
 $functions = array(
+    'block_enrolcode_delete' => array(
+        'classname'   => 'block_enrolcode_external',
+        'methodname'  => 'delete',
+        'classpath'   => 'blocks/enrolcode/externallib.php',
+        'description' => 'Deletes a code.',
+        'type'        => 'write',
+        'ajax'        => 1,
+    ),
     'block_enrolcode_form' => array(
         'classname'   => 'block_enrolcode_external',
         'methodname'  => 'form',

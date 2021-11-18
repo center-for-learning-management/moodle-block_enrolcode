@@ -27,6 +27,29 @@ require_once($CFG->libdir . "/externallib.php");
 require_once($CFG->dirroot . "/blocks/enrolcode/locallib.php");
 
 class block_enrolcode_external extends external_api {
+    public static function delete_parameters() {
+        return new external_function_parameters(array(
+            'code' => new external_value(PARAM_TEXT, 'the code'),
+        ));
+    }
+
+    /**
+     * Get a temporary access code.
+     * @return created accesscode
+     */
+    public static function delete($code) {
+        global $CFG, $DB;
+        $params = self::validate_parameters(self::delete_parameters(), [ 'code' => $code ]);
+        return block_enrolcode_lib::delete_code($params['code']);
+    }
+    /**
+     * Return definition.
+     * @return external_value
+     */
+    public static function delete_returns() {
+        return new external_value(PARAM_ALPHANUM, 'Return the result.');
+    }
+
     public static function form_parameters() {
         return new external_function_parameters(array(
             'courseid' => new external_value(PARAM_INT, 'id of course'),
@@ -58,6 +81,8 @@ class block_enrolcode_external extends external_api {
             'groupid' => new external_value(PARAM_INT, 'id of group'),
             'custommaturity' => new external_value(PARAM_INT, '1 if we want to set a custom maturity'),
             'maturity' => new external_value(PARAM_INT, 'the custom maturity as timestamp or 0'),
+            'chkenrolmentend' => new external_value(PARAM_INT, '1 if we want to set an end of enrolment'),
+            'enrolmentend' => new external_value(PARAM_INT, 'the end of enrolment as timestamp or 0'),
         ));
     }
 
@@ -65,10 +90,15 @@ class block_enrolcode_external extends external_api {
      * Get a temporary access code.
      * @return created accesscode
      */
-    public static function get($courseid, $roleid, $groupid, $custommaturity, $maturity) {
+    public static function get($courseid, $roleid, $groupid, $custommaturity, $maturity, $chkenrolmentend, $enrolmentend) {
         global $CFG, $DB;
-        $params = self::validate_parameters(self::get_parameters(), array('courseid' => $courseid, 'roleid' => $roleid, 'groupid' => $groupid, 'custommaturity' => $custommaturity, 'maturity' => $maturity));
-        return block_enrolcode_lib::create_code($params['courseid'], $params['roleid'], $params['groupid'], $params['custommaturity'], $params['maturity']);
+        $paramarray = [
+            'courseid' => $courseid, 'roleid' => $roleid, 'groupid' => $groupid,
+            'custommaturity' => $custommaturity, 'maturity' => $maturity,
+            'chkenrolmentend' => $chkenrolmentend, 'enrolmentend' => $enrolmentend,
+        ];
+        $params = self::validate_parameters(self::get_parameters(), $paramarray);
+        return block_enrolcode_lib::create_code($params['courseid'], $params['roleid'], $params['groupid'], $params['custommaturity'], $params['maturity'], $params['chkenrolmentend'], $params['enrolmentend']);
     }
     /**
      * Return definition.

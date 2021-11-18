@@ -51,7 +51,7 @@ class block_enrolcode_lib {
      * @param maturity (optional) the maturity to set.
      * @return the code that was stored in the database.
      */
-    public static function create_code($courseid=0, $roleid=0, $groupid=0, $custommaturity=0, $maturity=0) {
+    public static function create_code($courseid = 0, $roleid = 0, $groupid = 0, $custommaturity = 0, $maturity = 0, $chkenrolmentend = 0, $enrolmentend = 0) {
         self::clean_db();
         global $COURSE, $DB, $USER;
         if (empty($courseid)) {
@@ -75,6 +75,7 @@ class block_enrolcode_lib {
                 'courseid' => $courseid,
                 'created' => time(),
                 'maturity' => (!empty($custommaturity) && !empty($maturity)) ? $maturity : 0,
+                'enrolmentend' => (!empty($chkenrolmentend) && !empty($enrolmentend)) ? $enrolmentend : 0,
                 'roleid' => $roleid,
                 'groupid' => $groupid,
                 'userid' => $USER->id,
@@ -110,6 +111,21 @@ class block_enrolcode_lib {
 
         global $OUTPUT;
     }
+
+    /**
+     * Delete a particular code.
+     * @param code the code to delete.
+     */
+    public static function delete_code($code) {
+        global $COURSE, $DB, $USER;
+
+        self::clean_db();
+
+        if (self::is_trainer($COURSE->id)) {
+            return ($DB->delete_records('block_enrolcode', [ 'code' => $code ]) ? 1 : 'error');
+        } else return 'permission denied';
+    }
+
     /**
      * Check if the current user is enrolled in a course.
      * @param courseid (optional) if not given use the id from COURSE
@@ -169,7 +185,7 @@ class block_enrolcode_lib {
                     $instance = $DB->get_record('enrol', array('id' => $instanceid));
                 }
 
-                $enrol->enrol_user($instance, $USER->id, $enrolcode->roleid);
+                $enrol->enrol_user($instance, $USER->id, $enrolcode->roleid, 0, $enrolcode->enrolmentend);
 
                 if (!empty($enrolcode->groupid)) {
                     // Add user to the usergroup in the course.
