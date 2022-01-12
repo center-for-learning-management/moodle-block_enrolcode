@@ -79,10 +79,6 @@ class code_form extends moodleform {
             $mform->addElement('hidden', 'groupid');
         }
 
-        $onclick_maturity = 'require(["jquery"], function($) { var inp = $("[data-uniqid=\'custommaturity-' . $uniqid . '\']"); inp.closest("form").find("#id_maturity_day").closest(".row.fitem").css("display", $(inp).is(":checked") ? "block" : "none"); });';
-        $mform->addElement('checkbox', 'custommaturity', get_string('custommaturity', 'block_enrolcode'), NULL, array('data-uniqid' => 'custommaturity-' . $uniqid, 'onclick' => $onclick_maturity));
-        $mform->setType('custommaturity', PARAM_INT);
-
         $utime = new DateTime("now", core_date::get_user_timezone_object());
         $utz = $utime->getTimezone();
         $startendargs = array(
@@ -92,13 +88,27 @@ class code_form extends moodleform {
                'step' => 5,
                'optional' => 0,
             );
-        $mform->addElement('date_time_selector', 'maturity', '' /*get_string('maturity', 'block_enrolcode')*/, $startendargs);
 
-        $onclick_enrolmentend = 'require(["jquery"], function($) { var inp = $("[data-uniqid=\'chkenrolmentend-' . $uniqid . '\']"); inp.closest("form").find("#id_enrolmentend_day").closest(".row.fitem").css("display", $(inp).is(":checked") ? "block" : "none"); });';
-        $mform->addElement('checkbox', 'chkenrolmentend', get_string('enrolmentend', 'block_enrolcode'), NULL, array('data-uniqid' => 'chkenrolmentend-' . $uniqid, 'onclick' => $onclick_enrolmentend));
+        $groupcustommaturity = [];
+        $groupenrolmentend = [];
+
+        $onclick_maturity     = 'require(["jquery"], function($) { var inp = $("[data-uniqid=\'custommaturity-' . $uniqid . '\']"); inp.closest("form").find("#fgroup_id_groupcustommaturity").find("select").prop("disabled", !$(inp).is(":checked")); });';
+        $onclick_enrolmentend = 'require(["jquery"], function($) { var inp = $("[data-uniqid=\'chkenrolmentend-' . $uniqid . '\']"); inp.closest("form").find("#fgroup_id_groupenrolmentend").find("select").prop("disabled", !$(inp).is(":checked")); });';
+
+        $groupcustommaturity[] =& $mform->createElement('checkbox', 'custommaturity', get_string('custommaturity', 'block_enrolcode') . "&nbsp;", NULL, array('data-uniqid' => 'custommaturity-' . $uniqid, 'onclick' => $onclick_maturity));
+        $groupcustommaturity[] =& $mform->createElement('date_time_selector', 'maturity', '' /*get_string('maturity', 'block_enrolcode')*/, $startendargs);
+
+        $groupenrolmentend[] =& $mform->createElement('checkbox', 'chkenrolmentend', get_string('enrolmentend', 'block_enrolcode') . "&nbsp;", NULL, array('data-uniqid' => 'chkenrolmentend-' . $uniqid, 'onclick' => $onclick_enrolmentend));
+        $groupenrolmentend[] =& $mform->createElement('date_time_selector', 'enrolmentend', '' /* get_string('enrolmentend:short', 'block_enrolcode') */, $startendargs);
+
+        $mform->setDefault('custommaturity', 1);
+        $mform->setType('custommaturity', PARAM_INT);
+
+        $mform->setDefault('maturity', time() + 60*60*24*7);
         $mform->setType('chkenrolmentend', PARAM_INT);
 
-        $mform->addElement('date_time_selector', 'enrolmentend', '' /* get_string('enrolmentend:short', 'block_enrolcode') */, $startendargs);
+        $mform->addGroup($groupcustommaturity, 'groupcustommaturity', '', '', false);
+        $mform->addGroup($groupenrolmentend, 'groupenrolmentend', '', '', false);
 
         $mform->addElement('html', "<a href=\"#\" class=\"btn btn-primary\" onclick=\"var btn = this; require(['block_enrolcode/main'], function(MAIN) { MAIN.getCode(btn); }); return false;\">" . get_string('create') . "</a>");
         if (count($oldcodes) > 0) {
@@ -140,9 +150,17 @@ class code_form extends moodleform {
         $mform->addElement('html', "<div id=\"enrolcode-$uniqid\" class=\"hidden\">$fullsizehtml</div>");
 
         // Unfortunately this does not work in modal, therefore afterwards we do it manually.
-        $mform->hideIf('maturity', 'custommaturity', 'notchecked');
+        //$mform->hideIf('maturity', 'custommaturity', 'notchecked');
         // Next line hides dateselector in modal.
-        $mform->addElement('html', '<script type="text/javascript"> ' . $onclick_maturity . $onclick_enrolmentend . '; $("[data-uniqid=\'custommaturity-' . $uniqid . '\']").closest("form").find("#id_maturity_calendar,#id_enrolmentend_calendar").remove(); </script>');
+        $script = [
+            '<script type="text/javascript">',
+            $onclick_maturity,
+            $onclick_enrolmentend . ';',
+            '$("[data-uniqid=\'custommaturity-' . $uniqid . '\']").closest("form").find("#id_maturity_calendar,#id_enrolmentend_calendar").remove();',
+            '$("#fgroup_id_groupcustommaturity, #fgroup_id_groupenrolmentend").css("display", "block").children(".col-md-3").remove();',
+            '</script>'
+        ];
+        $mform->addElement('html', implode("\n", $script));
 
 
         $mform->disable_form_change_checker();
