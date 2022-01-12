@@ -100,7 +100,7 @@ class code_form extends moodleform {
 
         $mform->addElement('date_time_selector', 'enrolmentend', '' /* get_string('enrolmentend:short', 'block_enrolcode') */, $startendargs);
 
-        $mform->addElement('html', "<a href=\"#\" class=\"btn btn-secondary\" onclick=\"var btn = this; require(['block_enrolcode/main'], function(MAIN) { MAIN.getCode(btn); }); return false;\">" . get_string('create') . "</a>");
+        $mform->addElement('html', "<a href=\"#\" class=\"btn btn-primary\" onclick=\"var btn = this; require(['block_enrolcode/main'], function(MAIN) { MAIN.getCode(btn); }); return false;\">" . get_string('create') . "</a>");
         if (count($oldcodes) > 0) {
             $mform->addElement('html', "<a href=\"#\" class=\"btn btn-secondary\" onclick=\"$('#block_enrolcode_old_codes-" . $uniqid . "').toggleClass('hidden'); return false;\" style=\"margin-left: 10px;\">" . get_string('show_existing_codes', 'block_enrolcode') . "</a>");
         }
