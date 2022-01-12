@@ -132,7 +132,7 @@ class code_form extends moodleform {
                 $role = $DB->get_record('role', array('id' => $oldcode->roleid));
                 $group = $DB->get_record('groups', array('id' => $oldcode->groupid));
                 $table[] = '    <tr id="enrolcode-item-' . $itemuniqid . '" class="code" data-uniqid="' . $uniqid . '" data-code="' . $oldcode->code . '">';
-                $table[] = '        <td><a href="#" onclick="require([\'block_enrolcode/main\'], function(M) { M.fullsizeCode(\'' . $uniqid . '\', ' . $a . '); }); return false;"><i class="fa fa-compress"></i></a></td>';
+                $table[] = '        <td><a href="#" onclick="require([\'block_enrolcode/main\'], function(M) { M.fullsizeCode(\'' . $uniqid . '\', ' . $a . '); }); return false;"><i class="fa fa-expand"></i></a></td>';
                 $table[] = '        <td>';
                 $table[] = '            <img class="qr" src="' . $CFG->wwwroot . '/blocks/enrolcode/pix/qr.php?format=base64&txt=' . base64_encode($oldcode->code) . '" width="20" />';
                 $table[] = '            <a href="' . $CFG->wwwroot . '/blocks/enrolcode/enrol.php?code=' . $oldcode->code . '" target="_blank" class="accesscode">' . $oldcode->code . '</a>';
