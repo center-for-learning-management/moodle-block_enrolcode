@@ -136,7 +136,6 @@ class code_form extends moodleform {
             $table[] = '</table>';
             $mform->addElement('html', "<div id=\"block_enrolcode_old_codes-" . $uniqid . "\" class=\"hidden\" style=\"margin-top: 10px;\">" . implode("\n", $table) . "</div>");
         }
-        //$mform->addElement('html', "<div id=\"enrolcode-$uniqid\" class=\"hidden\">$fullsizehtml</div>");
 
         // Unfortunately this does not work in modal, therefore afterwards we do it manually.
         //$mform->hideIf('maturity', 'custommaturity', 'notchecked');
