@@ -17,38 +17,69 @@ define(
          *
          */
         deleteCode: function(code, uniqid) {
-            AJAX.call([{
-                methodname: 'block_enrolcode_delete',
-                args: { code: code },
-                done: function(result) {
-                    if (result == '1') {
-                        // Remove code from list and close fullsize-pane.
-                        if (typeof(uniqid) !== 'undefined') {
-                            $('#block_enrolcode_old_codes-' + uniqid + ' [data-code=' + code + ']').remove();
-                            $('#enrolcode-' + uniqid).addClass('hidden');
-                        }
-                    } else {
-                        alert(result);
-                    }
-                },
-                fail: NOTIFICATION.exception
-            }]);
+            STR.get_strings([
+                    { 'key' : 'confirmation', 'component': 'block_enrolcode' },
+                    { 'key' : 'really_delete', 'component': 'block_enrolcode', 'param': { 'code': code } },
+                ]).done(function(s) {
+                    ModalFactory.create({
+                        type: ModalFactory.types.SAVE_CANCEL,
+                        title: s[0],
+                        body: s[1],
+                        large: false,
+                    }).then(function(modal) {
+                        var root = modal.getRoot();
+                        root.on(ModalEvents.save, function() {
+                            modal.hide();
+                            AJAX.call([{
+                                methodname: 'block_enrolcode_delete',
+                                args: { code: code },
+                                done: function(result) {
+                                    if (result == '1') {
+                                        // Remove code from list and close fullsize-pane.
+                                        if (typeof(uniqid) !== 'undefined') {
+                                            $('#block_enrolcode_old_codes-' + uniqid + ' [data-code=' + code + ']').remove();
+                                        }
+                                    } else {
+                                        alert(result);
+                                    }
+                                },
+                                fail: NOTIFICATION.exception
+                            }]);
+                        });
+                        modal.show();
+                    });
+                }
+            ).fail(NOTIFICATION.exception);
         },
         /**
          * Show a code in full-size
          */
         fullsizeCode: function(uniqid, subid) {
             if (this.debug) console.log('block_enrolcode/main::fullsizeCode(uniqid, subid)', uniqid, subid);
+
+            var enrolcode = {};
             var parentid = '#enrolcode-item-' + uniqid + '-' + subid;
             var parent = $(parentid);
             var fields = [ 'accesscode', 'group', 'maturity', 'enrolmentend', 'role'];
             fields.forEach(function(field) {
-                $('#enrolcode-' + uniqid + ' .' + field).html($(parentid + ' .' + field).html());
+                enrolcode[field] = $(parentid + ' .' + field).html();
             });
-            $('#enrolcode-' + uniqid + ' .url').attr('href', $(parentid + ' .accesscode').attr('href'));
-            $('#enrolcode-' + uniqid + ' .qr').attr('src', $(parentid + ' .qr').attr('src'));
-            //$('#enrolform-' + uniqid).addClass('hidden');
-            $('#enrolcode-' + uniqid).removeClass('hidden');
+            enrolcode['qr'] = $(parentid + ' .qr').attr('src');
+            enrolcode['url'] = $(parentid + ' .accesscode').attr('href');
+
+            STR.get_strings([
+                    { 'key' : 'code:accesscode', 'component': 'block_enrolcode' },
+                ]).done(function(s) {
+                    ModalFactory.create({
+                        type: ModalFactory.types.OK,
+                        title: s[0] + ' <strong>' + enrolcode.accesscode + '</strong>',
+                        body: TEMPLATES.render('block_enrolcode/code_fullsize', enrolcode),
+                        large: true,
+                    }).then(function(modal) {
+                        modal.show();
+                    });
+                }
+            ).fail(NOTIFICATION.exception);
         },
         /**
          * Generate the URL for enrolment.

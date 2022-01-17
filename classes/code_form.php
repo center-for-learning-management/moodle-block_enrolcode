@@ -47,22 +47,9 @@ class code_form extends moodleform {
         $mform->addElement('hidden', 'courseid', $courseid);
         $mform->setType('courseid', PARAM_INT);
 
-        $context = context_course::instance($courseid);
+        $context = \context_course::instance($courseid);
         $roles = get_assignable_roles($context);
 
-        $sql = "SELECT roleid id,name
-                    FROM {role_names}
-                    WHERE contextid = ?";
-        $overwrites = $DB->get_records_sql($sql, [ $context->id ]);
-
-        foreach($roles as $roleid => $role) {
-            if (!empty($overwrites[$roleid]->name)) {
-                $roles[$roleid] = $overwrites[$roleid]->name;
-            }
-        }
-        asort($roles);
-
-        $fullsizehtml = $OUTPUT->render_from_template('block_enrolcode/code_fullsize', [ 'uniqid' => $uniqid ]);
         $mform->addElement('html', "<div id=\"enrolform-$uniqid\">");
         $mform->addElement('select', 'roleid', get_string('role'), $roles);
 
@@ -73,7 +60,6 @@ class code_form extends moodleform {
             foreach ($_groups AS $group) {
                 $groups[$group->id] = $group->name;
             }
-            $mform->addElement('html', "<p>" . get_string('group') . "</p>");
             $mform->addElement('select', 'groupid', get_string('group'), $groups);
         } else {
             $mform->addElement('hidden', 'groupid');
@@ -95,11 +81,11 @@ class code_form extends moodleform {
         $onclick_maturity     = 'require(["jquery"], function($) { var inp = $("[data-uniqid=\'custommaturity-' . $uniqid . '\']"); inp.closest("form").find("#fgroup_id_groupcustommaturity").find("select").prop("disabled", !$(inp).is(":checked")); });';
         $onclick_enrolmentend = 'require(["jquery"], function($) { var inp = $("[data-uniqid=\'chkenrolmentend-' . $uniqid . '\']"); inp.closest("form").find("#fgroup_id_groupenrolmentend").find("select").prop("disabled", !$(inp).is(":checked")); });';
 
-        $groupcustommaturity[] =& $mform->createElement('checkbox', 'custommaturity', get_string('custommaturity', 'block_enrolcode') . "&nbsp;", NULL, array('data-uniqid' => 'custommaturity-' . $uniqid, 'onclick' => $onclick_maturity));
         $groupcustommaturity[] =& $mform->createElement('date_time_selector', 'maturity', '' /*get_string('maturity', 'block_enrolcode')*/, $startendargs);
+        $groupcustommaturity[] =& $mform->createElement('checkbox', 'custommaturity', '', NULL, array('data-uniqid' => 'custommaturity-' . $uniqid, 'onclick' => $onclick_maturity));
 
-        $groupenrolmentend[] =& $mform->createElement('checkbox', 'chkenrolmentend', get_string('enrolmentend', 'block_enrolcode') . "&nbsp;", NULL, array('data-uniqid' => 'chkenrolmentend-' . $uniqid, 'onclick' => $onclick_enrolmentend));
         $groupenrolmentend[] =& $mform->createElement('date_time_selector', 'enrolmentend', '' /* get_string('enrolmentend:short', 'block_enrolcode') */, $startendargs);
+        $groupenrolmentend[] =& $mform->createElement('checkbox', 'chkenrolmentend', '', NULL, array('data-uniqid' => 'chkenrolmentend-' . $uniqid, 'onclick' => $onclick_enrolmentend));
 
         $mform->setDefault('custommaturity', 1);
         $mform->setType('custommaturity', PARAM_INT);
@@ -107,8 +93,8 @@ class code_form extends moodleform {
         $mform->setDefault('maturity', time() + 60*60*24*7);
         $mform->setType('chkenrolmentend', PARAM_INT);
 
-        $mform->addGroup($groupcustommaturity, 'groupcustommaturity', '', '', false);
-        $mform->addGroup($groupenrolmentend, 'groupenrolmentend', '', '', false);
+        $mform->addGroup($groupcustommaturity, 'groupcustommaturity', get_string('custommaturity', 'block_enrolcode'), '', false);
+        $mform->addGroup($groupenrolmentend, 'groupenrolmentend', get_string('enrolmentend', 'block_enrolcode'), '', false);
 
         $mform->addElement('html', "<a href=\"#\" class=\"btn btn-primary\" onclick=\"var btn = this; require(['block_enrolcode/main'], function(MAIN) { MAIN.getCode(btn); }); return false;\">" . get_string('create') . "</a>");
         if (count($oldcodes) > 0) {
@@ -129,15 +115,18 @@ class code_form extends moodleform {
             $a = 0;
             foreach ($oldcodes AS $oldcode) {
                 $itemuniqid = $uniqid . '-' . $a;
-                $role = $DB->get_record('role', array('id' => $oldcode->roleid));
-                $group = $DB->get_record('groups', array('id' => $oldcode->groupid));
+                $group = $_groups[$oldcode->groupid];
+                $role = $roles[$oldcode->roleid];
                 $table[] = '    <tr id="enrolcode-item-' . $itemuniqid . '" class="code" data-uniqid="' . $uniqid . '" data-code="' . $oldcode->code . '">';
-                $table[] = '        <td><a href="#" onclick="require([\'block_enrolcode/main\'], function(M) { M.fullsizeCode(\'' . $uniqid . '\', ' . $a . '); }); return false;"><i class="fa fa-expand"></i></a></td>';
+                $table[] = '        <td>';
+                $table[] = '            <a href="#" onclick="require([\'block_enrolcode/main\'], function(M) { M.fullsizeCode(\'' . $uniqid . '\', ' . $a . '); }); return false;"><i class="fa fa-expand"></i></a>';
+                $table[] = '            <a href="#" onclick="require([\'block_enrolcode/main\'], function(M) { M.deleteCode(\'' . $oldcode->code . '\', \'' . $uniqid . '\'); }); return false;"><i class="fa fa-trash"></i></a>';
+                $table[] = '        </td>';
                 $table[] = '        <td>';
                 $table[] = '            <img class="qr" src="' . $CFG->wwwroot . '/blocks/enrolcode/pix/qr.php?format=base64&txt=' . base64_encode($oldcode->code) . '" width="20" />';
                 $table[] = '            <a href="' . $CFG->wwwroot . '/blocks/enrolcode/enrol.php?code=' . $oldcode->code . '" target="_blank" class="accesscode">' . $oldcode->code . '</a>';
                 $table[] = '        </td>';
-                $table[] = '        <td class="role">' . (!empty($role->name) ? $role->name : $role->shortname) . '</td>';
+                $table[] = '        <td class="role">' . $role . '</td>';
                 $table[] = '        <td class="group">' . (!empty($group->id) ? $group->name : '-') . '</td>';
                 $table[] = '        <td class="maturity">' . (!empty($oldcode->maturity) ? date('Y-m-d H:i:s', $oldcode->maturity) : get_string('maturity:immediately', 'block_enrolcode')) . '</td>';
                 $table[] = '        <td class="enrolmentend">' . (!empty($oldcode->enrolmentend) ? date('Y-m-d H:i:s', $oldcode->enrolmentend) : get_string('enrolmentend:never', 'block_enrolcode')) . '</td>';
@@ -147,7 +136,7 @@ class code_form extends moodleform {
             $table[] = '</table>';
             $mform->addElement('html', "<div id=\"block_enrolcode_old_codes-" . $uniqid . "\" class=\"hidden\" style=\"margin-top: 10px;\">" . implode("\n", $table) . "</div>");
         }
-        $mform->addElement('html', "<div id=\"enrolcode-$uniqid\" class=\"hidden\">$fullsizehtml</div>");
+        //$mform->addElement('html', "<div id=\"enrolcode-$uniqid\" class=\"hidden\">$fullsizehtml</div>");
 
         // Unfortunately this does not work in modal, therefore afterwards we do it manually.
         //$mform->hideIf('maturity', 'custommaturity', 'notchecked');
@@ -157,7 +146,7 @@ class code_form extends moodleform {
             $onclick_maturity,
             $onclick_enrolmentend . ';',
             '$("[data-uniqid=\'custommaturity-' . $uniqid . '\']").closest("form").find("#id_maturity_calendar,#id_enrolmentend_calendar").remove();',
-            '$("#fgroup_id_groupcustommaturity, #fgroup_id_groupenrolmentend").css("display", "block").children(".col-md-3").remove();',
+            //'$("#fgroup_id_groupcustommaturity, #fgroup_id_groupenrolmentend").css("display", "block").children(".col-md-3").remove();',
             '</script>'
         ];
         $mform->addElement('html', implode("\n", $script));

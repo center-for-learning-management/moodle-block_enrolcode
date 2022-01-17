@@ -16,41 +16,38 @@
 
 }}
 
-<a href="#" class="btn btn-primary"
-    onclick="$('#enrolcode-{{uniqid}}').toggleClass('hidden');">
-    <i class="fa fa-times-circle"></i>
-    {{#str}} close, block_enrolcode {{/str}}
-</a>
-<a href="#" onclick="require(['block_enrolcode/main'], function(M) { M.deleteCode($('#enrolcode-fullsize-{{uniqid}} .accesscode').html(), '{{uniqid}}'); }); return false;" class="btn btn-secondary">
-    <i class="fa fa-trash"></i>
-    {{#str}} remove {{/str}}
-</a>
-
-
 <table class="generaltable" id="enrolcode-fullsize-{{uniqid}}">
     <tr>
+        <th>
+            {{#str}} url {{/str}}
+        </th>
+        <td colspan="2">
+            <a href="{{url}}" target="_blank">{{url}}</a>
+        </td>
+    </tr>
+    <tr>
         <th>{{#str}} role {{/str}}</th>
-        <td class="role"></td>
-        <td rowspan="3" width="150">
+        <td class="role">{{role}}</td>
+        <td rowspan="5">
             <a href="#" class="url">
-                <img src="" class="qr" width="150" height="150"/>
+                <img src="{{qr}}" class="qr" height="300"/>
             </a>
         </td>
     </tr>
     <tr>
         <th>{{#str}} group {{/str}}</th>
-        <td class="group"></td>
+        <td class="group">{{group}}</td>
     </tr>
     <tr>
         <th>{{#str}} custommaturity, block_enrolcode {{/str}}</th>
-        <td class="maturity"></td>
+        <td class="maturity">{{maturity}}</td>
     </tr>
     <tr>
         <th>{{#str}} enrolmentend, block_enrolcode {{/str}}</th>
-        <td class="enrolmentend"></td>
+        <td class="enrolmentend">{{enrolmentend}}</td>
     </tr>
     <tr>
         <th>{{#str}} code:accesscode, block_enrolcode {{/str}}</th>
-        <td class="accesscode"></td>
+        <td class="accesscode">{{accesscode}}</td>
     </tr>
 </table>

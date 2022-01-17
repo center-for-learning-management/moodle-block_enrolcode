@@ -32,8 +32,8 @@ $string['code:enrol:guesterror'] = 'You need to login before you can use the acc
 $string['code:enter'] = 'Enter temporary accesscode (as provided by your trainer)';
 $string['code:get'] = 'Temporary accesscode';
 $string['code:get:error'] = 'Error creating temporary accesscode';
+$string['confirmation'] = 'Confirmation';
 $string['copied'] = 'copied';
-
 
 $string['custommaturity'] = 'Enrolment allowed until';
 
@@ -48,5 +48,7 @@ $string['finished'] = 'Finished';
 
 $string['maturity'] = 'Maturity';
 $string['maturity:immediately'] = 'immediately';
+
+$string['really_delete'] = 'Really delete the code "{$a->code}"?';
 
 $string['show_existing_codes'] = 'Show existing codes';

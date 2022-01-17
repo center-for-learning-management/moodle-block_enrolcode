@@ -32,8 +32,8 @@ $string['code:enrol:guesterror'] = 'Sie müssen sich anmelden, bevor Sie den Cod
 $string['code:enter'] = 'Temporären Zugangscode eingeben (wird von der Lehrperson bekanntgegeben)';
 $string['code:get'] = 'Temporärer Zugangscode';
 $string['code:get:error'] = 'Fehler bei der Erstellung des temporären Zugangscodes.';
+$string['confirmation'] = 'Bestätigung';
 $string['copied'] = 'in Zwischenablage kopiert';
-
 
 $string['custommaturity'] = 'Einschreibung möglich bis';
 
@@ -48,5 +48,7 @@ $string['finished'] = 'Fertig';
 
 $string['maturity'] = 'Ablaufdatum';
 $string['maturity:immediately'] = 'sofort';
+
+$string['really_delete'] = 'Den Einschreibschlüssel "{$a->code}" wirklich löschen?';
 
 $string['show_existing_codes'] = 'Zeige existierende Codes';
