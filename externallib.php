@@ -47,7 +47,7 @@ class block_enrolcode_external extends external_api {
      * @return external_value
      */
     public static function delete_returns() {
-        return new external_value(PARAM_ALPHANUM, 'Return the result.');
+        return new external_value(PARAM_TEXT, 'Return the result.');
     }
 
     public static function form_parameters() {

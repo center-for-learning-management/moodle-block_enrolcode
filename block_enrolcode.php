@@ -53,7 +53,7 @@ class block_enrolcode extends block_base {
             $this->content->text = $OUTPUT->render_from_template("block_enrolcode/code_enter", array());
         }
         // If is teacher of course show button to create a code that is displayed in a modal.
-        if ($COURSE->id > 1 && block_enrolcode_lib::is_trainer()) {
+        if ($COURSE->id > 1 && block_enrolcode_lib::can_manage()) {
             $this->content->text = block_enrolcode_lib::create_form($COURSE->id);
         }
 

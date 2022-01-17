@@ -25,6 +25,21 @@ defined('MOODLE_INTERNAL') || die;
 
 class block_enrolcode_lib {
     public static $create_form_courseid = 0;
+
+    /**
+     * Check if the current user has capability enrol/manual:manage.
+     * @param courseid (optional) if not given use the id from COURSE
+     */
+    public static function can_manage($courseid = 0) {
+        global $COURSE;
+
+        if (empty($courseid)) {
+            $courseid = $COURSE->id;
+        }
+        $context = \context_course::instance($courseid);
+        return has_capability('enrol/manual:manage', $context);
+    }
+
     /**
      * Removes old entries from database.
      */
@@ -69,7 +84,7 @@ class block_enrolcode_lib {
             }
         }
         $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
-        if (!empty($course->id) && self::is_trainer($courseid)) {
+        if (!empty($course->id) && self::can_manage($courseid)) {
             $enrolcode = (object) array(
                 'code' => substr(str_shuffle(str_repeat($x='0123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ', ceil(4/strlen($x)) )),1,4),
                 'courseid' => $courseid,
@@ -121,7 +136,7 @@ class block_enrolcode_lib {
 
         self::clean_db();
 
-        if (self::is_trainer($COURSE->id)) {
+        if (self::can_manage($COURSE->id)) {
             return ($DB->delete_records('block_enrolcode', [ 'code' => $code ]) ? 1 : 'error');
         } else return 'permission denied';
     }
@@ -131,21 +146,14 @@ class block_enrolcode_lib {
      * @param courseid (optional) if not given use the id from COURSE
      * @param withcapability (optional) only enrolments with a particular capability.
      */
-    public static function is_enrolled($courseid=0, $withcapability = "") {
+    public static function is_enrolled($courseid = 0, $withcapability = "") {
         global $COURSE, $USER;
 
         if (empty($courseid)) {
             $courseid = $COURSE->id;
         }
-        $context = context_course::instance($courseid);
+        $context = \context_course::instance($courseid);
         return is_enrolled($context, $USER, $withcapability, true);
-    }
-    /**
-     * Check if the current user is enrolled in a course with capability enrol/manual:manage.
-     * @param courseid (optional) if not given use the id from COURSE
-     */
-    public static function is_trainer($courseid = 0) {
-        return self::is_enrolled($courseid, "enrol/manual:manage") || has_capability('moodle/site:config', context_system::instance());
     }
 
     /**
