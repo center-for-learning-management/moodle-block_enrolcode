@@ -64,7 +64,9 @@ class block_enrolcode_lib {
      * @param groupid (optional) the groupid, defaults to 0.
      * @param custommaturity (optional) whether or not user wants a custom maturity.
      * @param maturity (optional) the maturity to set.
-     * @param nopermissioncheck (optional) true to suppress permission checks
+     * @param chkenrolmentend (optional) if an end of enrolment shall be set.
+     * @param enrolmentend (optional) the timestamp when enrolments shall end.
+     * @param nopermissioncheck (optional) true to suppress permission checks.
      * @return the code that was stored in the database.
      */
     public static function create_code($courseid = 0, $roleid = 0, $groupid = 0, $custommaturity = 0, $maturity = 0, $chkenrolmentend = 0, $enrolmentend = 0, $nopermissioncheck = false) {
