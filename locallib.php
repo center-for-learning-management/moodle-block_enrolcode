@@ -64,9 +64,10 @@ class block_enrolcode_lib {
      * @param groupid (optional) the groupid, defaults to 0.
      * @param custommaturity (optional) whether or not user wants a custom maturity.
      * @param maturity (optional) the maturity to set.
+     * @param nopermissioncheck (optional) true to suppress permission checks
      * @return the code that was stored in the database.
      */
-    public static function create_code($courseid = 0, $roleid = 0, $groupid = 0, $custommaturity = 0, $maturity = 0, $chkenrolmentend = 0, $enrolmentend = 0) {
+    public static function create_code($courseid = 0, $roleid = 0, $groupid = 0, $custommaturity = 0, $maturity = 0, $chkenrolmentend = 0, $enrolmentend = 0, $nopermissioncheck = false) {
         self::clean_db();
         global $COURSE, $DB, $USER;
         if (empty($courseid)) {
@@ -84,9 +85,10 @@ class block_enrolcode_lib {
             }
         }
         $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
-        if (!empty($course->id) && self::can_manage($courseid)) {
+        if (!empty($course->id) && ($nopermissioncheck || self::can_manage($courseid))) {
+            $codelength = rand(4,7);
             $enrolcode = (object) array(
-                'code' => substr(str_shuffle(str_repeat($x='0123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ', ceil(4/strlen($x)) )),1,4),
+                'code' => substr(str_shuffle(str_repeat($x='0123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ', ceil(4/strlen($x)) )),1,$codelength),
                 'courseid' => $courseid,
                 'created' => time(),
                 'maturity' => (!empty($custommaturity) && !empty($maturity)) ? $maturity : 0,
