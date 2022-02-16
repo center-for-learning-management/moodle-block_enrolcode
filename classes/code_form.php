@@ -123,7 +123,7 @@ class code_form extends moodleform {
                 $table[] = '            <a href="#" onclick="require([\'block_enrolcode/main\'], function(M) { M.deleteCode(\'' . $oldcode->code . '\', \'' . $uniqid . '\'); }); return false;"><i class="fa fa-trash"></i></a>';
                 $table[] = '        </td>';
                 $table[] = '        <td>';
-                $table[] = '            <img class="qr" src="' . $CFG->wwwroot . '/blocks/enrolcode/pix/qr.php?format=base64&txt=' . base64_encode($oldcode->code) . '" width="20" />';
+                $table[] = '            <img class="qr" src="' . $CFG->wwwroot . '/blocks/enrolcode/pix/qr.php?format=base64&txt=' . base64_encode("$CFG->wwwroot/blocks/enrolcode/enrol.php?code=" . $oldcode->code) . '" width="20" />';
                 $table[] = '            <a href="' . $CFG->wwwroot . '/blocks/enrolcode/enrol.php?code=' . $oldcode->code . '" target="_blank" class="accesscode">' . $oldcode->code . '</a>';
                 $table[] = '        </td>';
                 $table[] = '        <td class="role">' . $role . '</td>';
