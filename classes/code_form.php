@@ -52,6 +52,7 @@ class code_form extends moodleform {
 
         $mform->addElement('html', "<div id=\"enrolform-$uniqid\">");
         $mform->addElement('select', 'roleid', get_string('role'), $roles);
+        $mform->setDefault('roleid', 5);
 
         $_groups = $DB->get_records_sql("SELECT id,name FROM {groups} WHERE courseid=? ORDER BY name ASC", array($courseid));
         if (count($_groups) > 0) {
