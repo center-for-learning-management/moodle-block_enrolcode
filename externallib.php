@@ -38,9 +38,10 @@ class block_enrolcode_external extends external_api {
      * @return created accesscode
      */
     public static function delete($code) {
-        global $CFG, $DB;
         $params = self::validate_parameters(self::delete_parameters(), ['code' => $code]);
-        return block_enrolcode_lib::delete_code($params['code']);
+        $ret = block_enrolcode_lib::delete_code($params['code']);
+
+        return $ret ?: 'permission denied #9iekdir';
     }
 
     /**

@@ -130,8 +130,6 @@ class block_enrolcode_lib {
         require_once(__DIR__ . '/classes/code_form.php');
         $codeform = new code_form(null, null, 'post', '_self', array('class' => 'ui-enrolcode'), true);
         return $codeform->render();
-
-        global $OUTPUT;
     }
 
     /**
@@ -139,13 +137,21 @@ class block_enrolcode_lib {
      * @param code the code to delete.
      */
     public static function delete_code($code) {
-        global $COURSE, $DB, $USER;
+        global $DB;
 
         self::clean_db();
 
-        if (self::can_manage($COURSE->id)) {
-            return ($DB->delete_records('block_enrolcode', ['code' => $code]) ? 1 : 'error');
-        } else return 'permission denied';
+        $code = $DB->get_record('block_enrolcode', ['code' => $code]);
+        if (!$code) {
+            return false;
+        }
+
+        if (!self::can_manage($code->courseid)) {
+            return false;
+        }
+
+        $DB->delete_records('block_enrolcode', ['id' => $code->id]);
+        return true;
     }
 
     /**
