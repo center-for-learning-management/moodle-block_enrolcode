@@ -31,14 +31,16 @@ class block_enrolcode extends block_base {
     /**
      * Checks whether or not block_eduvidual is installed
      * @return true or false
-    **/
-    public static function uses_eduvidual(){
+     **/
+    public static function uses_eduvidual() {
         global $CFG;
         return file_exists($CFG->dirroot . '/blocks/eduvidual/block_eduvidual.php');
     }
+
     public function init() {
         $this->title = get_string('code:accesscode', 'block_enrolcode');
     }
+
     public function get_content() {
         global $COURSE, $OUTPUT, $PAGE;
 
@@ -47,7 +49,7 @@ class block_enrolcode extends block_base {
         if ($this->content !== null) {
             return $this->content;
         }
-        $this->content = (object) array('text' => '');
+        $this->content = (object)array('text' => '');
         // If course is dashboard =courseid 1 or is not enrolled in course show enter form for code
         if ($COURSE->id == 1 || !block_enrolcode_lib::is_enrolled()) {
             $this->content->text = $OUTPUT->render_from_template("block_enrolcode/code_enter", array());
@@ -59,12 +61,15 @@ class block_enrolcode extends block_base {
 
         return $this->content;
     }
+
     public function hide_header() {
         return true;
     }
+
     public function has_config() {
         return true;
     }
+
     public function instance_allow_multiple() {
         return false;
     }

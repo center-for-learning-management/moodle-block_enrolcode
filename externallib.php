@@ -39,9 +39,10 @@ class block_enrolcode_external extends external_api {
      */
     public static function delete($code) {
         global $CFG, $DB;
-        $params = self::validate_parameters(self::delete_parameters(), [ 'code' => $code ]);
+        $params = self::validate_parameters(self::delete_parameters(), ['code' => $code]);
         return block_enrolcode_lib::delete_code($params['code']);
     }
+
     /**
      * Return definition.
      * @return external_value
@@ -66,6 +67,7 @@ class block_enrolcode_external extends external_api {
         $params = self::validate_parameters(self::form_parameters(), array('courseid' => $courseid));
         return block_enrolcode_lib::create_form($params['courseid']);
     }
+
     /**
      * Return definition.
      * @return external_value
@@ -100,6 +102,7 @@ class block_enrolcode_external extends external_api {
         $params = self::validate_parameters(self::get_parameters(), $paramarray);
         return block_enrolcode_lib::create_code($params['courseid'], $params['roleid'], $params['groupid'], $params['custommaturity'], $params['maturity'], $params['chkenrolmentend'], $params['enrolmentend']);
     }
+
     /**
      * Return definition.
      * @return external_value
@@ -124,6 +127,7 @@ class block_enrolcode_external extends external_api {
         $params = self::validate_parameters(self::revoke_parameters(), array('code' => $code));
         return block_enrolcode_lib::revoke_code($params['code']);
     }
+
     /**
      * Return definition.
      * @return external_value
@@ -148,6 +152,7 @@ class block_enrolcode_external extends external_api {
         $params = self::validate_parameters(self::send_parameters(), array('code' => $code));
         return block_enrolcode_lib::enrol_by_code($params['code']);
     }
+
     /**
      * Return definition.
      * @return external_value

@@ -51,12 +51,14 @@ class block_enrolcode_lib {
                         OR (maturity=0 AND created<?)";
         $DB->execute($sql, array(time(), self::clean_ts()));
     }
+
     /**
      * Returns the timestamp for checking the validity.
      */
     public static function clean_ts() {
-        return time() - 60*60;
+        return time() - 60 * 60;
     }
+
     /**
      * Create a code.
      * @param courseid (optional) the courseid, defaults to COURSE->id.
@@ -88,9 +90,9 @@ class block_enrolcode_lib {
         }
         $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
         if (!empty($course->id) && ($nopermissioncheck || self::can_manage($courseid))) {
-            $codelength = rand(4,7);
-            $enrolcode = (object) array(
-                'code' => substr(str_shuffle(str_repeat($x='0123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ', ceil(4/strlen($x)) )),1,$codelength),
+            $codelength = rand(4, 7);
+            $enrolcode = (object)array(
+                'code' => substr(str_shuffle(str_repeat($x = '0123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ', ceil(4 / strlen($x)))), 1, $codelength),
                 'courseid' => $courseid,
                 'created' => time(),
                 'maturity' => (!empty($custommaturity) && !empty($maturity)) ? $maturity : 0,
@@ -117,6 +119,7 @@ class block_enrolcode_lib {
             return '';
         }
     }
+
     /**
      * Create the form in HTML.
      * @param courseid the courseid the form is built for.
@@ -141,7 +144,7 @@ class block_enrolcode_lib {
         self::clean_db();
 
         if (self::can_manage($COURSE->id)) {
-            return ($DB->delete_records('block_enrolcode', [ 'code' => $code ]) ? 1 : 'error');
+            return ($DB->delete_records('block_enrolcode', ['code' => $code]) ? 1 : 'error');
         } else return 'permission denied';
     }
 
@@ -167,7 +170,7 @@ class block_enrolcode_lib {
         self::clean_db();
         global $CFG, $DB, $USER;
 
-        if(!isloggedin() || isguestuser($USER)) {
+        if (!isloggedin() || isguestuser($USER)) {
             return 0;
         } else {
             $enrolcode = $DB->get_record('block_enrolcode', array('code' => $code));
@@ -211,6 +214,7 @@ class block_enrolcode_lib {
             }
         }
     }
+
     /**
      * Revokes a given code.
      */

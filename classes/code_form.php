@@ -29,7 +29,7 @@ require_once($CFG->dirroot . "/blocks/enrolcode/locallib.php");
 class code_form extends moodleform {
     static $accepted_types = '';
     static $areamaxbytes = 10485760;
-    static $maxbytes = 1024*1024;
+    static $maxbytes = 1024 * 1024;
     static $maxfiles = 1;
     static $subdirs = 0;
 
@@ -58,7 +58,7 @@ class code_form extends moodleform {
         if (count($_groups) > 0) {
             $groups = array();
             $groups[0] = get_string('none');
-            foreach ($_groups AS $group) {
+            foreach ($_groups as $group) {
                 $groups[$group->id] = $group->name;
             }
             $mform->addElement('select', 'groupid', get_string('group'), $groups);
@@ -69,17 +69,17 @@ class code_form extends moodleform {
         $utime = new DateTime("now", core_date::get_user_timezone_object());
         $utz = $utime->getTimezone();
         $startendargs = array(
-               'startyear' => date("Y"),
-               'stopyear' => date("Y") + 5,
-               'timezone' => floor($utz->getOffset(new DateTime("now")) / 60 / 60),
-               'step' => 5,
-               'optional' => 0,
-            );
+            'startyear' => date("Y"),
+            'stopyear' => date("Y") + 5,
+            'timezone' => floor($utz->getOffset(new DateTime("now")) / 60 / 60),
+            'step' => 5,
+            'optional' => 0,
+        );
 
         $groupcustommaturity = [];
         $groupenrolmentend = [];
 
-        $onclick_maturity     = 'require(["jquery"], function($) { var inp = $("[data-uniqid=\'custommaturity-' . $uniqid . '\']"); inp.closest("form").find("#fgroup_id_groupcustommaturity").find("select").prop("disabled", !$(inp).is(":checked")); });';
+        $onclick_maturity = 'require(["jquery"], function($) { var inp = $("[data-uniqid=\'custommaturity-' . $uniqid . '\']"); inp.closest("form").find("#fgroup_id_groupcustommaturity").find("select").prop("disabled", !$(inp).is(":checked")); });';
         $onclick_enrolmentend = 'require(["jquery"], function($) { var inp = $("[data-uniqid=\'chkenrolmentend-' . $uniqid . '\']"); inp.closest("form").find("#fgroup_id_groupenrolmentend").find("select").prop("disabled", !$(inp).is(":checked")); });';
 
         $groupcustommaturity[] =& $mform->createElement('date_time_selector', 'maturity', '' /*get_string('maturity', 'block_enrolcode')*/, $startendargs);
@@ -91,7 +91,7 @@ class code_form extends moodleform {
         $mform->setDefault('custommaturity', 1);
         $mform->setType('custommaturity', PARAM_INT);
 
-        $mform->setDefault('maturity', time() + 60*60*24*7);
+        $mform->setDefault('maturity', time() + 60 * 60 * 24 * 7);
         $mform->setType('chkenrolmentend', PARAM_INT);
 
         $mform->addGroup($groupcustommaturity, 'groupcustommaturity', get_string('custommaturity', 'block_enrolcode'), '', false);
@@ -114,7 +114,7 @@ class code_form extends moodleform {
             $table[] = '        <th>' . get_string('enrolmentend:short', 'block_enrolcode') . '</th>';
             $table[] = '    </tr>';
             $a = 0;
-            foreach ($oldcodes AS $oldcode) {
+            foreach ($oldcodes as $oldcode) {
                 $itemuniqid = $uniqid . '-' . $a;
                 $group = $_groups[$oldcode->groupid];
                 $role = $roles[$oldcode->roleid];
@@ -147,7 +147,7 @@ class code_form extends moodleform {
             $onclick_enrolmentend . ';',
             '$("[data-uniqid=\'custommaturity-' . $uniqid . '\']").closest("form").find("#id_maturity_calendar,#id_enrolmentend_calendar").remove();',
             //'$("#fgroup_id_groupcustommaturity, #fgroup_id_groupenrolmentend").css("display", "block").children(".col-md-3").remove();',
-            '</script>'
+            '</script>',
         ];
         $mform->addElement('html', implode("\n", $script));
 
