@@ -25,7 +25,7 @@ if (!isloggedin() || isguestuser($USER)) {
     echo $OUTPUT->footer();
 } else {
     $courseid = block_enrolcode_lib::enrol_by_code($code);
-    if (!empty($courseid)) {
+    if ($courseid) {
         redirect($CFG->wwwroot . '/course/view.php?id=' . $courseid);
         echo $OUTPUT->header();
         echo $OUTPUT->render_from_template('block_enrolcode/alert', array(

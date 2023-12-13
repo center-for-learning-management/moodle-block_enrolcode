@@ -90,9 +90,15 @@ class block_enrolcode_lib {
         }
         $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
         if (!empty($course->id) && ($nopermissioncheck || self::can_manage($courseid))) {
-            $codelength = rand(4, 7);
+            $codelength = 7;
+            $chars = '0123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ';
+            $code = '';
+            for ($i = 0; $i < $codelength; $i++) {
+                $code .= substr($chars, random_int(0, strlen($chars) - 1), 1);
+            }
+
             $enrolcode = (object)array(
-                'code' => substr(str_shuffle(str_repeat($x = '0123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ', ceil(4 / strlen($x)))), 1, $codelength),
+                'code' => $code,
                 'courseid' => $courseid,
                 'created' => time(),
                 'maturity' => (!empty($custommaturity) && !empty($maturity)) ? $maturity : 0,
@@ -179,8 +185,18 @@ class block_enrolcode_lib {
         if (!isloggedin() || isguestuser($USER)) {
             return 0;
         } else {
-            $enrolcode = $DB->get_record('block_enrolcode', array('code' => $code));
-            if (!empty($enrolcode->id)) {
+            if (!empty($_SESSION['last-enrolcode-used']) && $_SESSION['last-enrolcode-used'] > time() - 5) {
+                // We do not allow to use a code twice within 5 seconds.
+                return 0;
+            }
+            $_SESSION['last-enrolcode-used'] = time();
+
+            $enrolcode = $DB->get_record_select('block_enrolcode',
+                // case senstive search.
+                $DB->sql_like('code', '?', true),
+                [$code]);
+
+            if ($enrolcode) {
                 // Code is valid.
                 $course = $DB->get_record('course', array('id' => $enrolcode->courseid), '*', MUST_EXIST);
                 $context = context_course::instance($course->id);
