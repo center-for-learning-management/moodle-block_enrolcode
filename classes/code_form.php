@@ -116,7 +116,7 @@ class code_form extends moodleform {
             $a = 0;
             foreach ($oldcodes as $oldcode) {
                 $itemuniqid = $uniqid . '-' . $a;
-                $group = $_groups[$oldcode->groupid];
+                $group = $_groups[$oldcode->groupid] ?? '';
                 $role = $roles[$oldcode->roleid];
                 $table[] = '    <tr id="enrolcode-item-' . $itemuniqid . '" class="code" data-uniqid="' . $uniqid . '" data-code="' . $oldcode->code . '">';
                 $table[] = '        <td>';
