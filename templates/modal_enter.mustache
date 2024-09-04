@@ -15,14 +15,5 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 }}
-{{< core/modal }}
-    {{$title}}{{#str}} code:get, block_enrolcode {{/str}}{{/title}}
-    {{$body}}
-        <p>{{#str}} code:enter, block_enrolcode {{/str}}</p>
-        <input id="code" />
-    {{/body}}
-    {{$footer}}
-        <button type="button" class="btn btn-primary" data-action="ok"
-            onclick="">{{#str}} finished, block_enrolcode {{/str}}</button>
-    {{/footer}}
-{{/ core/modal }}
+<p>{{#str}} code:enter, block_enrolcode {{/str}}</p>
+<input id="code" />
