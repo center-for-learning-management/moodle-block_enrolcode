@@ -16,19 +16,21 @@
 
 /**
  * @package    block_enrolcode
- * @copyright  2019 Center for Learning Management (http://www.lernmanagement.at)
+ * @copyright  2020 Center for Learningmangement (www.lernmanagement.at)
  * @author     Robert Schrenk
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
 
-function block_enrolcode_before_standard_html_head() {
-    global $PAGE;
-    $PAGE->requires->js_call_amd('block_enrolcode/main', 'injectMainmenuButton', array());
-    if (strpos($_SERVER["SCRIPT_FILENAME"], '/user/index.php') > 0) {
-        $courseid = optional_param('id', 0, PARAM_INT);
-        $PAGE->requires->js_call_amd('block_enrolcode/main', 'injectButton', array($courseid));
+namespace block_enrolcode;
+
+class hook_callbacks {
+    public static function before_standard_head_html_generation($hook): void {
+        global $PAGE;
+        $PAGE->requires->js_call_amd('block_enrolcode/main', 'injectMainmenuButton', array());
+        if (strpos($_SERVER["SCRIPT_FILENAME"], '/user/index.php') > 0) {
+            $courseid = optional_param('id', 0, PARAM_INT);
+            $PAGE->requires->js_call_amd('block_enrolcode/main', 'injectButton', array($courseid));
+        }
     }
-    return "";
 }

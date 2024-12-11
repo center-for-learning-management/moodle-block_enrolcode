@@ -16,15 +16,17 @@
 
 /**
  * @package    block_enrolcode
- * @copyright  2019 Center for Learning Management (http://www.lernmanagement.at)
+ * @copyright  2020 Center for Learningmanagement (www.lernmanagement.at)
  * @author     Robert Schrenk
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version = 2024121100;
-$plugin->requires = 2014051200;
-$plugin->component = 'block_enrolcode';
-$plugin->release = '1.4 (Build: 2021111801)';
-$plugin->maturity = MATURITY_STABLE;
+$callbacks = [
+    [
+        'hook' => \core\hook\output\before_standard_head_html_generation::class,
+        'callback' => [\block_enrolcode\hook_callbacks::class, 'before_standard_head_html_generation'],
+        'priority' => 500,
+    ],
+];
