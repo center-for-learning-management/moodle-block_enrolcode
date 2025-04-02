@@ -51,12 +51,12 @@ class block_enrolcode extends block_base {
         }
         $this->content = (object)array('text' => '');
         // If course is dashboard =courseid 1 or is not enrolled in course show enter form for code
-        if ($COURSE->id == 1 || !block_enrolcode_lib::is_enrolled()) {
+        if ($COURSE->id == 1 || !\block_enrolcode\locallib::is_enrolled()) {
             $this->content->text = $OUTPUT->render_from_template("block_enrolcode/code_enter", array());
         }
         // If is teacher of course show button to create a code that is displayed in a modal.
-        if ($COURSE->id > 1 && block_enrolcode_lib::can_manage()) {
-            $this->content->text = block_enrolcode_lib::create_form($COURSE->id);
+        if ($COURSE->id > 1 && \block_enrolcode\locallib::can_manage()) {
+            $this->content->text = \block_enrolcode\locallib::create_form($COURSE->id);
         }
 
         return $this->content;

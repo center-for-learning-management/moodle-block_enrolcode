@@ -21,9 +21,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
 namespace block_enrolcode;
-
 class hook_callbacks {
     public static function before_standard_head_html_generation($hook): void {
         global $PAGE;

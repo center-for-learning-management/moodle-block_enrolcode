@@ -39,7 +39,7 @@ class block_enrolcode_external extends external_api {
      */
     public static function delete($code) {
         $params = self::validate_parameters(self::delete_parameters(), ['code' => $code]);
-        $ret = block_enrolcode_lib::delete_code($params['code']);
+        $ret = \block_enrolcode\locallib::delete_code($params['code']);
 
         return $ret ?: 'permission denied #9iekdir';
     }
@@ -66,7 +66,7 @@ class block_enrolcode_external extends external_api {
         global $PAGE;
         $PAGE->set_context(context_system::instance());
         $params = self::validate_parameters(self::form_parameters(), array('courseid' => $courseid));
-        return block_enrolcode_lib::create_form($params['courseid']);
+        return \block_enrolcode\locallib::create_form($params['courseid']);
     }
 
     /**
@@ -101,7 +101,7 @@ class block_enrolcode_external extends external_api {
             'chkenrolmentend' => $chkenrolmentend, 'enrolmentend' => $enrolmentend,
         ];
         $params = self::validate_parameters(self::get_parameters(), $paramarray);
-        return block_enrolcode_lib::create_code($params['courseid'], $params['roleid'], $params['groupid'], $params['custommaturity'], $params['maturity'], $params['chkenrolmentend'], $params['enrolmentend']);
+        return \block_enrolcode\locallib::create_code($params['courseid'], $params['roleid'], $params['groupid'], $params['custommaturity'], $params['maturity'], $params['chkenrolmentend'], $params['enrolmentend']);
     }
 
     /**
@@ -126,7 +126,7 @@ class block_enrolcode_external extends external_api {
     public static function revoke($code) {
         global $CFG, $DB;
         $params = self::validate_parameters(self::revoke_parameters(), array('code' => $code));
-        return block_enrolcode_lib::revoke_code($params['code']);
+        return \block_enrolcode\locallib::revoke_code($params['code']);
     }
 
     /**
@@ -151,7 +151,7 @@ class block_enrolcode_external extends external_api {
     public static function send($code) {
         global $CFG, $DB;
         $params = self::validate_parameters(self::send_parameters(), array('code' => $code));
-        return block_enrolcode_lib::enrol_by_code($params['code']);
+        return \block_enrolcode\locallib::enrol_by_code($params['code']);
     }
 
     /**
