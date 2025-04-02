@@ -26,7 +26,7 @@ namespace block_enrolcode;
 defined('MOODLE_INTERNAL') || die;
 
 require_once("{$CFG->libdir}/formslib.php");
-class code_form extends moodleform {
+class code_form extends \moodleform {
     static $accepted_types = '';
     static $areamaxbytes = 10485760;
     static $maxbytes = 1024 * 1024;
