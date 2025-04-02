@@ -24,8 +24,6 @@
 defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir . "/externallib.php");
-require_once($CFG->dirroot . "/blocks/enrolcode/locallib.php");
-
 class block_enrolcode_external extends external_api {
     public static function delete_parameters() {
         return new external_function_parameters(array(
@@ -40,7 +38,6 @@ class block_enrolcode_external extends external_api {
     public static function delete($code) {
         $params = self::validate_parameters(self::delete_parameters(), ['code' => $code]);
         $ret = \block_enrolcode\locallib::delete_code($params['code']);
-
         return $ret ?: 'permission denied #9iekdir';
     }
 
