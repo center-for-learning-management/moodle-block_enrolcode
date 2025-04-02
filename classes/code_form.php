@@ -63,7 +63,7 @@ class code_form extends \moodleform {
         $startendargs = array(
             'startyear' => date("Y"),
             'stopyear' => date("Y") + 5,
-            'timezone' => floor($utz->getOffset(new DateTime("now")) / 60 / 60),
+            'timezone' => floor($utz->getOffset(new \DateTime("now")) / 60 / 60),
             'step' => 5,
             'optional' => 0,
         );
