@@ -58,7 +58,7 @@ class code_form extends \moodleform {
         } else {
             $mform->addElement('hidden', 'groupid');
         }
-        $utime = new DateTime("now", \core_date::get_user_timezone_object());
+        $utime = new \DateTime("now", \core_date::get_user_timezone_object());
         $utz = $utime->getTimezone();
         $startendargs = array(
             'startyear' => date("Y"),
