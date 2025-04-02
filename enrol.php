@@ -3,12 +3,11 @@
 require_once('../../config.php');
 sesskey();
 
-require_once($CFG->dirroot . '/blocks/enrolcode/locallib.php');
 require_login();
 
 $code = required_param('code', PARAM_ALPHANUM);
 
-$PAGE->set_context(context_system::instance());
+$PAGE->set_context(\context_system::instance());
 $PAGE->set_pagelayout('standard');
 $PAGE->set_url('/blocks/enrolcode/enrol.php', array('code' => $code));
 $PAGE->set_title(get_string('code:accesscode', 'block_enrolcode'));
