@@ -16,15 +16,22 @@
 
 /**
  * @package    block_enrolcode
- * @copyright  2019 Center for Learning Management (http://www.lernmanagement.at)
+ * @copyright  2025 Austrian Federal Ministry of Education
  * @author     Robert Schrenk
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version = 2025040300;
-$plugin->requires = 2024042200;
-$plugin->component = 'block_enrolcode';
-$plugin->release = '1.7';
-$plugin->maturity = MATURITY_STABLE;
+if ($ADMIN->fulltree) {
+    $settings->add(
+        new admin_setting_configcheckbox(
+            'block_enrolcode/link_user_nav',
+            get_string('settings:link_user_nav', 'block_enrolcode'),
+            get_string('settings:link_user_nav_help', 'block_enrolcode'),
+            1,
+            1,
+            0
+        )
+    );
+}

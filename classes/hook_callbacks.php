@@ -25,10 +25,12 @@ namespace block_enrolcode;
 class hook_callbacks {
     public static function before_standard_head_html_generation($hook): void {
         global $PAGE;
-        $PAGE->requires->js_call_amd('block_enrolcode/main', 'injectMainmenuButton', array());
-        if (strpos($_SERVER["SCRIPT_FILENAME"], '/user/index.php') > 0) {
-            $courseid = optional_param('id', 0, PARAM_INT);
-            $PAGE->requires->js_call_amd('block_enrolcode/main', 'injectButton', array($courseid));
+        if (get_config('block_enrolcode', 'link_user_nav') == 1) {
+            $PAGE->requires->js_call_amd('block_enrolcode/main', 'injectMainmenuButton', array());
+            if (strpos($_SERVER["SCRIPT_FILENAME"], '/user/index.php') > 0) {
+                $courseid = optional_param('id', 0, PARAM_INT);
+                $PAGE->requires->js_call_amd('block_enrolcode/main', 'injectButton', array($courseid));
+            }
         }
     }
 }
