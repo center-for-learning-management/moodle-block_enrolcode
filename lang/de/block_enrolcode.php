@@ -52,5 +52,5 @@ $string['maturity:immediately'] = 'sofort';
 $string['really_delete'] = 'Den Einschreibschlüssel "{$a->code}" wirklich löschen?';
 
 $string['settings:link_user_nav'] = 'Link in Navigation';
-$string['settings:link_user_nav_help'] = 'Legt fest, ob ein Link im Nutzermenü gezeigt wird.';
+$string['settings:link_user_nav_help'] = 'Legt fest, ob ein Link zur Eingabe eines Codes im Nutzermenü gezeigt wird.';
 $string['show_existing_codes'] = 'Zeige existierende Codes';
