@@ -83,7 +83,7 @@ class code_form extends \moodleform {
         $mform->addGroup($groupenrolmentend, 'groupenrolmentend', get_string('enrolmentend', 'block_enrolcode'), '', false);
         $mform->addElement('html', "<a href=\"#\" class=\"btn btn-primary\" onclick=\"var btn = this; require(['block_enrolcode/main'], function(MAIN) { MAIN.getCode(btn); }); return false;\">" . get_string('create') . "</a>");
         if (count($oldcodes) > 0) {
-            $mform->addElement('html', "<a href=\"#\" class=\"btn btn-secondary\" onclick=\"$('#block_enrolcode_old_codes-" . $uniqid . "').toggleClass('hidden'); return false;\" style=\"margin-left: 10px;\">" . get_string('show_existing_codes', 'block_enrolcode') . "</a>");
+            $mform->addElement('html', "<a href=\"#\" class=\"btn btn-secondary\" onclick=\"require(['jquery'], function($) { $('#block_enrolcode_old_codes-" . $uniqid . "').toggleClass('hidden'); }); return false;\" style=\"margin-left: 10px;\">" . get_string('show_existing_codes', 'block_enrolcode') . "</a>");
         }
         $mform->addElement('html', "</div>"); // end div enrolform-uniqid
         if (count($oldcodes) > 0) {
