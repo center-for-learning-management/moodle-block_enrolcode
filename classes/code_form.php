@@ -99,7 +99,7 @@ class code_form extends moodleform {
 
         $mform->addElement('html', "<a href=\"#\" class=\"btn btn-primary\" onclick=\"var btn = this; require(['block_enrolcode/main'], function(MAIN) { MAIN.getCode(btn); }); return false;\">" . get_string('create') . "</a>");
         if (count($oldcodes) > 0) {
-            $mform->addElement('html', "<a href=\"#\" class=\"btn btn-secondary\" onclick=\"$('#block_enrolcode_old_codes-" . $uniqid . "').toggleClass('hidden'); return false;\" style=\"margin-left: 10px;\">" . get_string('show_existing_codes', 'block_enrolcode') . "</a>");
+            $mform->addElement('html', "<a href=\"#\" class=\"btn btn-secondary\" onclick=\"require(['jquery'], function($) { $('#block_enrolcode_old_codes-" . $uniqid . "').toggleClass('hidden'); }); return false;\" style=\"margin-left: 10px;\">" . get_string('show_existing_codes', 'block_enrolcode') . "</a>");
         }
         $mform->addElement('html', "</div>"); // end div enrolform-uniqid
 
@@ -145,7 +145,7 @@ class code_form extends moodleform {
             '<script type="text/javascript">',
             $onclick_maturity,
             $onclick_enrolmentend . ';',
-            '$("[data-uniqid=\'custommaturity-' . $uniqid . '\']").closest("form").find("#id_maturity_calendar,#id_enrolmentend_calendar").remove();',
+            'require(["jquery"], function($) { $("[data-uniqid=\'custommaturity-' . $uniqid . '\']").closest("form").find("#id_maturity_calendar,#id_enrolmentend_calendar").remove(); });',
             //'$("#fgroup_id_groupcustommaturity, #fgroup_id_groupenrolmentend").css("display", "block").children(".col-md-3").remove();',
             '</script>',
         ];
