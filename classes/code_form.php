@@ -127,7 +127,7 @@ class code_form extends \moodleform {
             '<script type="text/javascript">',
             $onclick_maturity,
             $onclick_enrolmentend . ';',
-            '$("[data-uniqid=\'custommaturity-' . $uniqid . '\']").closest("form").find("#id_maturity_calendar,#id_enrolmentend_calendar").remove();',
+            'require(["jquery"], function($) { $("[data-uniqid=\'custommaturity-' . $uniqid . '\']").closest("form").find("#id_maturity_calendar,#id_enrolmentend_calendar").remove(); });',
             //'$("#fgroup_id_groupcustommaturity, #fgroup_id_groupenrolmentend").css("display", "block").children(".col-md-3").remove();',
             '</script>',
         ];
