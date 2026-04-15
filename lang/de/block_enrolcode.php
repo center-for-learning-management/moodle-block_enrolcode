@@ -51,4 +51,15 @@ $string['maturity:immediately'] = 'sofort';
 
 $string['really_delete'] = 'Den Einschreibschlüssel "{$a->code}" wirklich löschen?';
 
+$string['settings:logo'] = 'QR-Code-Logo';
+$string['settings:logo_desc'] = 'Optionales Bild, das mittig in generierten QR-Codes angezeigt wird. Ein schlichtes Logo ist am zuverlässigsten scanbar.';
+$string['settings:circularqrcode'] = 'QR-Code in kreisförmiger Fläche darstellen';
+$string['settings:circularqrcode_desc'] = 'Behält den vollständigen QR-Code bei, stellt ihn aber in einem kreisförmigen Rahmen dar.';
+$string['settings:qrforegroundcolour'] = 'QR-Code-Farbe';
+$string['settings:qrforegroundcolour_desc'] = 'Wählt die Farbe der dunklen QR-Module. Dunklere Farben sind am zuverlässigsten scanbar.';
+$string['settings:qrappearance'] = 'QR-Code-Darstellung';
+$string['settings:qrappearance_desc'] = 'Einstellungen für die Darstellung generierter QR-Codes.';
+$string['settings:roundqrcode'] = 'Abgerundete QR-Module verwenden';
+$string['settings:roundqrcode_desc'] = 'Stellt QR-Module als Punkte dar, behält die Eckmarken aber quadratisch für eine zuverlässige Erkennung.';
+
 $string['show_existing_codes'] = 'Zeige existierende Codes';
