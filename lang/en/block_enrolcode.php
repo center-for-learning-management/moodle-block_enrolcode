@@ -51,4 +51,15 @@ $string['maturity:immediately'] = 'immediately';
 
 $string['really_delete'] = 'Really delete the code "{$a->code}"?';
 
+$string['settings:logo'] = 'QR code logo';
+$string['settings:logo_desc'] = 'Optional image to place in the middle of generated QR codes. Keep it simple for best scan reliability.';
+$string['settings:circularqrcode'] = 'Wrap QR code in a circular badge';
+$string['settings:circularqrcode_desc'] = 'Keep the full QR code intact, but present it inside a circular frame.';
+$string['settings:qrforegroundcolour'] = 'QR code colour';
+$string['settings:qrforegroundcolour_desc'] = 'Choose the colour used for the dark QR modules. Darker colours are the most reliable for scanning.';
+$string['settings:qrappearance'] = 'QR code appearance';
+$string['settings:qrappearance_desc'] = 'Adjust how generated QR codes are rendered.';
+$string['settings:roundqrcode'] = 'Use rounded QR modules';
+$string['settings:roundqrcode_desc'] = 'Render most QR modules as dots while keeping the corner finder patterns square for reliable scanning.';
+
 $string['show_existing_codes'] = 'Show existing codes';

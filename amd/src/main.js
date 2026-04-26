@@ -146,7 +146,7 @@ define(
                   title: s[0],
                   body: Templates.render('block_enrolcode/modal_code', {
                     code: code,
-                    qrcode_image: URL.relativeUrl('/blocks/enrolcode/pix/qr.php?format=base64&txt=' + btoa(MAIN.generateEnrolURL(result))),
+                    qrcode_image: URL.relativeUrl('/blocks/enrolcode/pix/qr.php?format=base64&preset=modal&txt=' + btoa(MAIN.generateEnrolURL(result))),
                     enrolurl: MAIN.generateEnrolURL(result),
                   }),
                   buttons: {
