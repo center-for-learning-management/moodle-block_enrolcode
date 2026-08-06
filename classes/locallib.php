@@ -21,18 +21,18 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace block_enrolcode;
+
 defined('MOODLE_INTERNAL') || die;
 
-class block_enrolcode_lib {
+class locallib {
     public static $create_form_courseid = 0;
-
     /**
      * Check if the current user has capability enrol/manual:manage.
      * @param courseid (optional) if not given use the id from COURSE
      */
     public static function can_manage($courseid = 0) {
         global $COURSE;
-
         if (empty($courseid)) {
             $courseid = $COURSE->id;
         }
@@ -46,10 +46,9 @@ class block_enrolcode_lib {
     public static function clean_db() {
         global $DB;
         // We remove any mature enrolcodes.
-        $sql = "DELETE FROM {block_enrolcode}
-                    WHERE (maturity>0 AND maturity<?)
-                        OR (maturity=0 AND created<?)";
-        $DB->execute($sql, array(time(), self::clean_ts()));
+        $params = [time(), self::clean_ts()];
+        $select = "(maturity>0 AND maturity<?) OR (maturity=0 AND created<?)";
+        $DB->delete_records_select('block_enrolcode', $select, $params);
     }
 
     /**
@@ -89,14 +88,13 @@ class block_enrolcode_lib {
             }
         }
         $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
-        if (!empty($course->id) && ($nopermissioncheck || self::can_manage($courseid))) {
+        if (!empty($course->id) && ($nopermissioncheck || static::can_manage($courseid))) {
             $codelength = 7;
             $chars = '0123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ';
             $code = '';
             for ($i = 0; $i < $codelength; $i++) {
                 $code .= substr($chars, random_int(0, strlen($chars) - 1), 1);
             }
-
             $enrolcode = (object)array(
                 'code' => $code,
                 'courseid' => $courseid,
@@ -111,7 +109,7 @@ class block_enrolcode_lib {
             $chkcode = $DB->get_record('block_enrolcode', array('code' => $enrolcode->code));
             if (!empty($chkcode->id)) {
                 // Code already exists - we need another code.
-                return self::create_code($courseid, $roleid, $groupid, $custommaturity, $maturity);
+                return static::create_code($courseid, $roleid, $groupid, $custommaturity, $maturity);
             } else {
                 // We can store that code.
                 $id = $DB->insert_record('block_enrolcode', $enrolcode, true);
@@ -132,9 +130,8 @@ class block_enrolcode_lib {
      * @return the form in HTML.
      */
     public static function create_form($courseid) {
-        self::$create_form_courseid = $courseid;
-        require_once(__DIR__ . '/classes/code_form.php');
-        $codeform = new code_form(null, null, 'post', '_self', array('class' => 'ui-enrolcode'), true);
+        static::$create_form_courseid = $courseid;
+        $codeform = new \block_enrolcode\code_form(null, null, 'post', '_self', array('class' => 'ui-enrolcode'), true);
         return $codeform->render();
     }
 
@@ -144,18 +141,14 @@ class block_enrolcode_lib {
      */
     public static function delete_code($code) {
         global $DB;
-
-        self::clean_db();
-
+        static::clean_db();
         $code = $DB->get_record('block_enrolcode', ['code' => $code]);
         if (!$code) {
             return false;
         }
-
         if (!self::can_manage($code->courseid)) {
             return false;
         }
-
         $DB->delete_records('block_enrolcode', ['id' => $code->id]);
         return true;
     }
@@ -167,7 +160,6 @@ class block_enrolcode_lib {
      */
     public static function is_enrolled($courseid = 0, $withcapability = "") {
         global $COURSE, $USER;
-
         if (empty($courseid)) {
             $courseid = $COURSE->id;
         }
@@ -179,9 +171,8 @@ class block_enrolcode_lib {
      * Checks if a given code is valid and does the enrolment.
      */
     public static function enrol_by_code($code) {
-        self::clean_db();
+        static::clean_db();
         global $CFG, $DB, $USER;
-
         if (!isloggedin() || isguestuser($USER)) {
             return 0;
         } else {
@@ -190,17 +181,16 @@ class block_enrolcode_lib {
                 return 0;
             }
             $_SESSION['last-enrolcode-used'] = time();
-
-            $enrolcode = $DB->get_record_select('block_enrolcode',
+            $enrolcode = $DB->get_record_select(
+                'block_enrolcode',
                 // case senstive search.
                 $DB->sql_like('code', '?', true),
-                [$code]);
-
+                [$code]
+            );
             if ($enrolcode) {
                 // Code is valid.
                 $course = $DB->get_record('course', array('id' => $enrolcode->courseid), '*', MUST_EXIST);
-                $context = context_course::instance($course->id);
-
+                $context = \context_course::instance($course->id);
                 $enrol = enrol_get_plugin('manual');
                 if ($enrol === null) {
                     return false;
@@ -213,7 +203,6 @@ class block_enrolcode_lib {
                         break;
                     }
                 }
-
                 if (empty($manualinstance->id)) {
                     $instanceid = $enrol->add_default_instance($course);
                     if ($instanceid === null) {
@@ -221,15 +210,12 @@ class block_enrolcode_lib {
                     }
                     $instance = $DB->get_record('enrol', array('id' => $instanceid));
                 }
-
                 $enrol->enrol_user($instance, $USER->id, $enrolcode->roleid, 0, $enrolcode->enrolmentend);
-
                 if (!empty($enrolcode->groupid)) {
                     // Add user to the usergroup in the course.
                     require_once($CFG->dirroot . '/group/lib.php');
                     groups_add_member($enrolcode->groupid, $USER);
                 }
-
                 return $enrolcode->courseid;
             } else {
                 return 0;
@@ -241,11 +227,9 @@ class block_enrolcode_lib {
      * Revokes a given code.
      */
     public static function revoke_code($code) {
-        self::clean_db();
-        global $DB, $USER;
-
+        static::clean_db();
+        global $DB;
         $enrolcode = $DB->get_record('block_enrolcode', array('code' => $code));
-
         if (empty($enrolcode->maturity)) {
             // We only revoke manually if we have no maturity.
             $DB->delete_records('block_enrolcode', array('code' => $code));

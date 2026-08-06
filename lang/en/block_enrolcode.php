@@ -51,4 +51,6 @@ $string['maturity:immediately'] = 'immediately';
 
 $string['really_delete'] = 'Really delete the code "{$a->code}"?';
 
+$string['settings:link_user_nav'] = 'Link User Navigation';
+$string['settings:link_user_nav_help'] = 'Whether to show a link for entering an access code in the user navigation menu.';
 $string['show_existing_codes'] = 'Show existing codes';
