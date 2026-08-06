@@ -1,3 +1,4 @@
+/* eslint-disable max-len, no-console, jsdoc/require-param */
 /*
  * @package    block_enrolcode
  * @copyright  2020 Center for learning management (www.lernmanagement.at)
@@ -9,8 +10,8 @@
  * @module block_enrolcode/main
  */
 define(
-  ['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/templates', 'core/url', 'core/modal_events', 'core/modal_factory', 'core/templates'],
-  function ($, AJAX, NOTIFICATION, STR, TEMPLATES, URL, ModalEvents, ModalFactory, Templates) {
+  ['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/templates', 'core/url', 'core/modal_events', 'core/modal', 'core/modal_cancel', 'core/modal_save_cancel'],
+  function ($, AJAX, NOTIFICATION, STR, TEMPLATES, URL, ModalEvents, Modal, ModalCancel, ModalSaveCancel) {
     return {
       debug: true,
       /**
@@ -21,8 +22,7 @@ define(
           {'key': 'confirmation', 'component': 'block_enrolcode'},
           {'key': 'really_delete', 'component': 'block_enrolcode', 'param': {'code': code}},
         ]).done(function (s) {
-            ModalFactory.create({
-              type: ModalFactory.types.SAVE_CANCEL,
+            ModalSaveCancel.create({
               title: s[0],
               body: s[1],
               large: false,
@@ -55,11 +55,12 @@ define(
        * Show a code in full-size
        */
       fullsizeCode: function (uniqid, subid) {
-        if (this.debug) console.log('block_enrolcode/main::fullsizeCode(uniqid, subid)', uniqid, subid);
+        if (this.debug) {
+          console.log('block_enrolcode/main::fullsizeCode(uniqid, subid)', uniqid, subid);
+        }
 
         var enrolcode = {};
         var parentid = '#enrolcode-item-' + uniqid + '-' + subid;
-        var parent = $(parentid);
         var fields = ['accesscode', 'group', 'maturity', 'enrolmentend', 'role'];
         fields.forEach(function (field) {
           enrolcode[field] = $(parentid + ' .' + field).html();
@@ -70,8 +71,7 @@ define(
         STR.get_strings([
           {'key': 'code:accesscode', 'component': 'block_enrolcode'},
         ]).done(function (s) {
-            ModalFactory.create({
-              type: ModalFactory.types.OK,
+            Modal.create({
               title: s[0] + ' <strong>' + enrolcode.accesscode + '</strong>',
               body: TEMPLATES.render('block_enrolcode/code_fullsize', enrolcode),
               large: true,
@@ -89,7 +89,6 @@ define(
       },
       /**
        * Get a code for fast enrolment.
-       * @param uniqid of form
        */
       getCode: function (src) {
         this.injectCSS();
@@ -138,13 +137,12 @@ define(
             args: data,
             done: function (result) {
               var code = result;
-              if (result != '' && result != null) {
+              if (result) {
                 // We got the code return it!
                 console.log('Got code', result);
-                ModalFactory.create({
-                  type: ModalFactory.types.ALERT,
+                ModalCancel.create({
                   title: s[0],
-                  body: Templates.render('block_enrolcode/modal_code', {
+                  body: TEMPLATES.render('block_enrolcode/modal_code', {
                     code: code,
                     qrcode_image: URL.relativeUrl('/blocks/enrolcode/pix/qr.php?format=base64&txt=' + btoa(MAIN.generateEnrolURL(result))),
                     enrolurl: MAIN.generateEnrolURL(result),
@@ -157,8 +155,7 @@ define(
                 });
               } else {
                 // There was an error - show error box
-                ModalFactory.create({
-                  type: ModalFactory.types.OK,
+                Modal.create({
                   title: 'Error',
                   body: TEMPLATES.render('block_enrolcode/code_get_error', {}),
                 }).then(function (modal) {
@@ -172,7 +169,7 @@ define(
       },
       /**
        * Show the form to get a code in a modal.
-       * @param courseid the courseid we need the modal for.
+       * @param {int} courseid the courseid we need the modal for.
        */
       getCodeModal: function (courseid) {
         this.injectCSS();
@@ -183,17 +180,11 @@ define(
             STR.get_strings([
               {'key': 'code:get', component: 'block_enrolcode'},
             ]).done(function (s) {
-                ModalFactory.create({
-                  type: ModalFactory.types.OK,
+                Modal.create({
                   title: s[0],
                   body: result,
                   large: true,
                 }).then(function (modal) {
-                  var root = modal.getRoot();
-                  root.on(ModalEvents.OK, function () {
-                    console.log('Hiding modal');
-                    modal.hide();
-                  });
                   modal.show();
                 });
               }
@@ -206,7 +197,9 @@ define(
        * Let's inject a button on the enrol users page.
        */
       injectButton: function (courseid) {
-        if (typeof courseid === 'undefined' || courseid <= 1) return;
+        if (typeof courseid === 'undefined' || courseid <= 1) {
+          return;
+        }
         STR.get_strings([
           {'key': 'code:get', component: 'block_enrolcode'},
         ]).done(function (s) {
@@ -245,13 +238,12 @@ define(
       },
       revokeCode: function (code) {
         this.injectCSS();
-        var MAIN = this;
         console.log('MAIN.revokeCode(code)', code);
 
         AJAX.call([{
           methodname: 'block_enrolcode_revoke',
           args: {'code': code},
-          done: function (result) {
+          done: function () {
             // We don't really care about the answer.
           },
           fail: NOTIFICATION.exception
@@ -259,14 +251,13 @@ define(
       },
       /**
        * Send a code for fast enrolment, either provider uniqid OR code
-       * @param uniqid of form containing the input-element for the code.
-       * @param code the code directly
+       * @param {string} uniqid of form containing the input-element for the code.
+       * @param {string} code the code directly
        */
       sendCode: function (uniqid, code) {
         this.injectCSS();
-        var MAIN = this;
         console.log('MAIN.sendCode(uniqid, code)', uniqid, code);
-        if (typeof uniqid !== 'undefined' && uniqid != '') {
+        if (uniqid) {
           code = $('#code-' + uniqid).val();
         }
         AJAX.call([{
@@ -279,8 +270,7 @@ define(
               top.location.href = URL.relativeUrl('/course/view.php?id=' + result, {});
             } else {
               // There was an error - show error box
-              ModalFactory.create({
-                type: ModalFactory.types.OK,
+              Modal.create({
                 title: 'Error',
                 body: 'Invalid code',
               }).then(function (modal) {
@@ -302,10 +292,9 @@ define(
           {'key': 'code:get', component: 'block_enrolcode'},
           {'key': 'finished', component: 'block_enrolcode'},
         ]).done(function (s) {
-          ModalFactory.create({
-            type: ModalFactory.types.SAVE_CANCEL,
+          ModalSaveCancel.create({
             title: s[0],
-            body: Templates.render('block_enrolcode/modal_enter', {}),
+            body: TEMPLATES.render('block_enrolcode/modal_enter', {}),
             buttons: {
               save: s[1],
             }
@@ -322,13 +311,13 @@ define(
       },
       /**
        * Share URL via a social network.
-       * @param src The button that was pressed.
+       * @param {HTMLElement} src The button that was pressed.
        */
       shareCode: function (src) {
         console.log('MAIN.shareCode(src)', src);
         var target = $(src).attr('data-target');
         var code = $(src).closest('.container').find('#code').html();
-        var enrolurl = MAIN.generateEnrolURL(code);
+        var enrolurl = this.generateEnrolURL(code);
         switch (target) {
           case 'facebook':
             window.open('https://www.facebook.com/sharer.php?u=' + encodeURI(enrolurl));
