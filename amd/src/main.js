@@ -9,37 +9,42 @@
  * @module block_enrolcode/main
  */
 define(
-  ['jquery', 'core/ajax', 'core/notification', 'core/str', 'core/templates', 'core/url', 'core/modal_events', 'core/modal_factory', 'core/templates'],
-  function ($, AJAX, NOTIFICATION, STR, TEMPLATES, URL, ModalEvents, ModalFactory, Templates) {
+  [ 'jquery', 'core/ajax', 'core/notification', 'core/str', 'core/templates',
+    'core/url', 'core/modal_events', 'core/modal_factory' ],
+  function ($, AJAX, NOTIFICATION, STR,
+            TEMPLATES, URL, ModalEvents, ModalFactory) {
     return {
       debug: true,
       /**
-       *
+       * delete a code
+       * @param {string} code
+       * @param {string} uniqid
        */
-      deleteCode: function (code, uniqid) {
+      deleteCode: function(code, uniqid) {
         STR.get_strings([
           {'key': 'confirmation', 'component': 'block_enrolcode'},
           {'key': 'really_delete', 'component': 'block_enrolcode', 'param': {'code': code}},
-        ]).done(function (s) {
+        ]).done(function(s) {
             ModalFactory.create({
               type: ModalFactory.types.SAVE_CANCEL,
               title: s[0],
               body: s[1],
               large: false,
-            }).then(function (modal) {
-              var root = modal.getRoot();
+            }).then(function(modal) {
+              let root = modal.getRoot();
               root.on(ModalEvents.save, function () {
                 modal.hide();
                 AJAX.call([{
                   methodname: 'block_enrolcode_delete',
                   args: {code: code},
                   done: function (result) {
-                    if (result == '1') {
+                    if (result === '1') {
                       // Remove code from list and close fullsize-pane.
                       if (typeof (uniqid) !== 'undefined') {
                         $('#block_enrolcode_old_codes-' + uniqid + ' [data-code=' + code + ']').remove();
                       }
                     } else {
+                      // eslint-disable-next-line no-alert
                       alert(result);
                     }
                   },
@@ -53,29 +58,28 @@ define(
       },
       /**
        * Show a code in full-size
+       * @param {string} uniqid
+       * @param {string} subid
        */
       fullsizeCode: function (uniqid, subid) {
-        if (this.debug) console.log('block_enrolcode/main::fullsizeCode(uniqid, subid)', uniqid, subid);
-
-        var enrolcode = {};
-        var parentid = '#enrolcode-item-' + uniqid + '-' + subid;
-        var parent = $(parentid);
-        var fields = ['accesscode', 'group', 'maturity', 'enrolmentend', 'role'];
+        let enrolcode = {};
+        let parentid = '#enrolcode-item-' + uniqid + '-' + subid;
+        let fields = ['accesscode', 'group', 'maturity', 'enrolmentend', 'role'];
         fields.forEach(function (field) {
           enrolcode[field] = $(parentid + ' .' + field).html();
         });
-        enrolcode['qr'] = $(parentid + ' .qr').attr('src');
-        enrolcode['url'] = $(parentid + ' .accesscode').attr('href');
+        enrolcode.qr = $(parentid + ' .qr').attr('src');
+        enrolcode.url = $(parentid + ' .accesscode').attr('href');
 
         STR.get_strings([
           {'key': 'code:accesscode', 'component': 'block_enrolcode'},
-        ]).done(function (s) {
+        ]).done(function(s) {
             ModalFactory.create({
               type: ModalFactory.types.OK,
               title: s[0] + ' <strong>' + enrolcode.accesscode + '</strong>',
               body: TEMPLATES.render('block_enrolcode/code_fullsize', enrolcode),
               large: true,
-            }).then(function (modal) {
+            }).then(function(modal) {
               modal.show();
             });
           }
@@ -83,27 +87,27 @@ define(
       },
       /**
        * Generate the URL for enrolment.
+       * @param {string} code
        */
       generateEnrolURL: function (code) {
         return URL.relativeUrl('/blocks/enrolcode/enrol.php?code=' + code);
       },
       /**
        * Get a code for fast enrolment.
-       * @param uniqid of form
+       * @param {string} src the clicked UI element
        */
       getCode: function (src) {
         this.injectCSS();
-        var MAIN = this;
-        console.log('MAIN.getCode(src)', src);
+        let MAIN = this;
 
-        var form = $(src).closest('form');
+        let form = $(src).closest('form');
 
-        var courseid = +$(form).find('[name="courseid"]').val();
-        var roleid = +$(form).find('[name="roleid"]').val();
-        var groupid = +$(form).find('[name="groupid"]').val();
-        var custommaturity = $(form).find('[name="custommaturity"]').is(":checked") ? 1 : 0;
-        var chkenrolmentend = $(form).find('[name="chkenrolmentend"]').is(":checked") ? 1 : 0;
-        var maturity = new Date(
+        let courseid = +$(form).find('[name="courseid"]').val();
+        let roleid = +$(form).find('[name="roleid"]').val();
+        let groupid = +$(form).find('[name="groupid"]').val();
+        let custommaturity = $(form).find('[name="custommaturity"]').is(":checked") ? 1 : 0;
+        let chkenrolmentend = $(form).find('[name="chkenrolmentend"]').is(":checked") ? 1 : 0;
+        let maturity = new Date(
           $(form).find('#id_maturity_year').val(),
           $(form).find('#id_maturity_month').val() - 1, // JavaScript starts with January = 0
           $(form).find('#id_maturity_day').val(),
@@ -111,7 +115,7 @@ define(
           $(form).find('#id_maturity_minute').val(),
           0,
           0);
-        var enrolmentend = new Date(
+        let enrolmentend = new Date(
           $(form).find('#id_enrolmentend_year').val(),
           $(form).find('#id_enrolmentend_month').val() - 1, // JavaScript starts with January = 0
           $(form).find('#id_enrolmentend_day').val(),
@@ -119,7 +123,7 @@ define(
           $(form).find('#id_enrolmentend_minute').val(),
           0,
           0);
-        var data = {
+        let data = {
           courseid: courseid,
           roleid: roleid,
           groupid: groupid,
@@ -137,22 +141,22 @@ define(
             methodname: 'block_enrolcode_get',
             args: data,
             done: function (result) {
-              var code = result;
-              if (result != '' && result != null) {
+              let code = result;
+              if (result !== '' && result !== null) {
+                let imageUrl = '/blocks/enrolcode/pix/qr.php?format=base64&txt=' + btoa(MAIN.generateEnrolURL(result));
                 // We got the code return it!
-                console.log('Got code', result);
                 ModalFactory.create({
                   type: ModalFactory.types.ALERT,
                   title: s[0],
-                  body: Templates.render('block_enrolcode/modal_code', {
+                  body: TEMPLATES.render('block_enrolcode/modal_code', {
                     code: code,
-                    qrcode_image: URL.relativeUrl('/blocks/enrolcode/pix/qr.php?format=base64&txt=' + btoa(MAIN.generateEnrolURL(result))),
+                    qrcode_image: URL.relativeUrl(imageUrl),
                     enrolurl: MAIN.generateEnrolURL(result),
                   }),
                   buttons: {
                     cancel: s[1],
                   }
-                }).then(function (modal) {
+                }).then(function(modal) {
                   modal.show();
                 });
               } else {
@@ -161,7 +165,7 @@ define(
                   type: ModalFactory.types.OK,
                   title: 'Error',
                   body: TEMPLATES.render('block_enrolcode/code_get_error', {}),
-                }).then(function (modal) {
+                }).then(function(modal) {
                   modal.show();
                 });
               }
@@ -172,14 +176,14 @@ define(
       },
       /**
        * Show the form to get a code in a modal.
-       * @param courseid the courseid we need the modal for.
+       * @param {int} courseid the courseid we need the modal for.
        */
       getCodeModal: function (courseid) {
         this.injectCSS();
         AJAX.call([{
           methodname: 'block_enrolcode_form',
           args: {'courseid': courseid},
-          done: function (result) {
+          done: function(result) {
             STR.get_strings([
               {'key': 'code:get', component: 'block_enrolcode'},
             ]).done(function (s) {
@@ -188,10 +192,9 @@ define(
                   title: s[0],
                   body: result,
                   large: true,
-                }).then(function (modal) {
-                  var root = modal.getRoot();
+                }).then(function(modal) {
+                  let root = modal.getRoot();
                   root.on(ModalEvents.OK, function () {
-                    console.log('Hiding modal');
                     modal.hide();
                   });
                   modal.show();
@@ -204,35 +207,41 @@ define(
       },
       /**
        * Let's inject a button on the enrol users page.
+       * @param {int} courseid
        */
-      injectButton: function (courseid) {
-        if (typeof courseid === 'undefined' || courseid <= 1) return;
+      injectButton: function(courseid) {
+        if (typeof courseid === 'undefined' || courseid <= 1) {
+          return;
+        }
         STR.get_strings([
           {'key': 'code:get', component: 'block_enrolcode'},
         ]).done(function (s) {
-            $('#page-content div.enrolusersbutton').parent().prepend(
+            let req = 'require([\'block_enrolcode/main\'], function(MAIN) { MAIN.getCodeModal(' + courseid + '); }); return false;';
+            $('#page-content #action_bar.tertiary-navigation>div.row>div.navitem:last-child>div:first-child')
+              .prepend(
               $('<div class="singlebutton enrolusersbutton block_enrolcode">').append(
-                $('<a href="#" onclick="require([\'block_enrolcode/main\'], function(MAIN) { MAIN.getCodeModal(' + courseid + '); }); return false;" class="btn btn-secondary my-1">' + s[0] + '</a>')
+                $('<a href="#" onclick="' + req + '" class="btn btn-secondary my-1">' + s[0] + '</a>')
               )
             );
           }
         ).fail(NOTIFICATION.exception);
       },
-      injectCSS: function () {
-        if ($('head>link[href$="/blocks/enrolcode/style/enrolcode.css"]').length == 0) {
-          console.log('Adding CSS File ', URL.relativeUrl('/blocks/enrolcode/style/enrolcode.css'));
-          $('head').append($('<link rel="stylesheet" type="text/css" href="' + URL.relativeUrl('/blocks/enrolcode/style/enrolcode.css') + '">'));
+      injectCSS: function() {
+        if ($('head>link[href$="/blocks/enrolcode/style/enrolcode.css"]').length === 0) {
+          let url = URL.relativeUrl('/blocks/enrolcode/style/enrolcode.css');
+          $('head').append($('<link rel="stylesheet" type="text/css" href="' + url + '">'));
         }
       },
       /**
        * Let's inject a button to enter a code directly in users main menu.
        */
-      injectMainmenuButton: function () {
+      injectMainmenuButton: function() {
         STR.get_strings([
           {'key': 'code:accesscode', component: 'block_enrolcode'},
         ]).done(function (s) {
+          let onclick = 'require([\'block_enrolcode/main\'], function(MAIN) { MAIN.sendCodeModal(); }); return false;';
             $('.usermenu .dropdown a[href$="/user/preferences.php"]').after(
-              $('<a>').attr('href', '#').attr('onclick', 'require([\'block_enrolcode/main\'], function(MAIN) { MAIN.sendCodeModal(); }); return false;')
+              $('<a>').attr('href', '#').attr('onclick', onclick)
                 .addClass('dropdown-item menu-action').attr('role', 'menuitem')
                 .attr('data-title', 'moodle,accesscard').attr('aria-labelledby', 'actionmenuaction-accesscard')
                 .attr('data-ajax', 'false').append([
@@ -243,15 +252,16 @@ define(
           }
         ).fail(NOTIFICATION.exception);
       },
-      revokeCode: function (code) {
+      /**
+       * Revoke a code
+       * @param {string} code
+       */
+      revokeCode: function(code) {
         this.injectCSS();
-        var MAIN = this;
-        console.log('MAIN.revokeCode(code)', code);
-
         AJAX.call([{
           methodname: 'block_enrolcode_revoke',
           args: {'code': code},
-          done: function (result) {
+          done: function() {
             // We don't really care about the answer.
           },
           fail: NOTIFICATION.exception
@@ -259,31 +269,28 @@ define(
       },
       /**
        * Send a code for fast enrolment, either provider uniqid OR code
-       * @param uniqid of form containing the input-element for the code.
-       * @param code the code directly
+       * @param {string} uniqid of form containing the input-element for the code.
+       * @param {string} code the code directly
        */
       sendCode: function (uniqid, code) {
         this.injectCSS();
-        var MAIN = this;
-        console.log('MAIN.sendCode(uniqid, code)', uniqid, code);
         if (typeof uniqid !== 'undefined' && uniqid != '') {
           code = $('#code-' + uniqid).val();
         }
         AJAX.call([{
           methodname: 'block_enrolcode_send',
           args: {'code': code},
-          done: function (result) {
-            console.log('Got courseid ', result);
+          done: function(result) {
             if (result > 1) {
               // We are enrolled - automatically redirect to course!
-              top.location.href = URL.relativeUrl('/course/view.php?id=' + result, {});
+              top.location.href = URL.relativeUrl('/course/view.php?id=' + result, {}, false);
             } else {
               // There was an error - show error box
               ModalFactory.create({
                 type: ModalFactory.types.OK,
                 title: 'Error',
                 body: 'Invalid code',
-              }).then(function (modal) {
+              }).then(function(modal) {
                 modal.show();
               });
             }
@@ -294,8 +301,8 @@ define(
       /**
        * Show the form to enter a code in a modal.
        */
-      sendCodeModal: function () {
-        var MAIN = this;
+      sendCodeModal: function() {
+        let MAIN = this;
         this.injectCSS();
 
         STR.get_strings([
@@ -305,16 +312,16 @@ define(
           ModalFactory.create({
             type: ModalFactory.types.SAVE_CANCEL,
             title: s[0],
-            body: Templates.render('block_enrolcode/modal_enter', {}),
+            body: TEMPLATES.render('block_enrolcode/modal_enter', {}),
             buttons: {
               save: s[1],
             }
-          }).then(function (modal) {
+          }).then(function(modal) {
             modal.show();
 
-            var root = modal.getRoot();
+            let root = modal.getRoot();
             root.on(ModalEvents.save, function () {
-              var code = $(root).find('#code').val();
+              let code = $(root).find('#code').val();
               MAIN.sendCode('', code);
             });
           });
@@ -322,13 +329,12 @@ define(
       },
       /**
        * Share URL via a social network.
-       * @param src The button that was pressed.
+       * @param {DOMelement} src The button that was pressed.
        */
       shareCode: function (src) {
-        console.log('MAIN.shareCode(src)', src);
-        var target = $(src).attr('data-target');
-        var code = $(src).closest('.container').find('#code').html();
-        var enrolurl = MAIN.generateEnrolURL(code);
+        let target = $(src).attr('data-target');
+        let code = $(src).closest('.container').find('#code').html();
+        let enrolurl = this.generateEnrolURL(code);
         switch (target) {
           case 'facebook':
             window.open('https://www.facebook.com/sharer.php?u=' + encodeURI(enrolurl));
