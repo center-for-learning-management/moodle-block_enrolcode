@@ -1,3 +1,4 @@
+/* eslint-disable max-len, no-console, jsdoc/require-param */
 /*
  * @package    block_enrolcode
  * @copyright  2020 Center for learning management (www.lernmanagement.at)
@@ -161,8 +162,7 @@ define(
                 });
               } else {
                 // There was an error - show error box
-                ModalFactory.create({
-                  type: ModalFactory.types.OK,
+                Modal.create({
                   title: 'Error',
                   body: TEMPLATES.render('block_enrolcode/code_get_error', {}),
                 }).then(function(modal) {
@@ -187,8 +187,7 @@ define(
             STR.get_strings([
               {'key': 'code:get', component: 'block_enrolcode'},
             ]).done(function (s) {
-                ModalFactory.create({
-                  type: ModalFactory.types.OK,
+                Modal.create({
                   title: s[0],
                   body: result,
                   large: true,
@@ -286,8 +285,7 @@ define(
               top.location.href = URL.relativeUrl('/course/view.php?id=' + result, {}, false);
             } else {
               // There was an error - show error box
-              ModalFactory.create({
-                type: ModalFactory.types.OK,
+              Modal.create({
                 title: 'Error',
                 body: 'Invalid code',
               }).then(function(modal) {
@@ -309,8 +307,7 @@ define(
           {'key': 'code:get', component: 'block_enrolcode'},
           {'key': 'finished', component: 'block_enrolcode'},
         ]).done(function (s) {
-          ModalFactory.create({
-            type: ModalFactory.types.SAVE_CANCEL,
+          ModalSaveCancel.create({
             title: s[0],
             body: TEMPLATES.render('block_enrolcode/modal_enter', {}),
             buttons: {
