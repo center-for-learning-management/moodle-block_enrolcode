@@ -24,13 +24,25 @@
 namespace block_enrolcode;
 class hook_callbacks {
     public static function before_standard_head_html_generation($hook): void {
-        global $PAGE;
+        global $CFG, $PAGE;
         if (get_config('block_enrolcode', 'link_user_nav') == 1) {
             $PAGE->requires->js_call_amd('block_enrolcode/main', 'injectMainmenuButton', array());
         }
-        if (strpos($_SERVER["SCRIPT_FILENAME"], '/user/index.php') > 0) {
-            $courseid = optional_param('id', 0, PARAM_INT);
-            $PAGE->requires->js_call_amd('block_enrolcode/main', 'injectButton', array($courseid));
+
+        // Only inject the course button on the course participants page and if the user can assign roles in this context.
+        $subpath = str_replace(
+            str_replace('\\', '/', $CFG->dirroot),
+            '',
+            str_replace('\\', '/', $_SERVER['SCRIPT_FILENAME']));
+        $courseid = optional_param('id', 0, PARAM_INT);
+        if ($subpath == '/user/index.php' && $courseid > 0) {
+            if (strpos($_SERVER["SCRIPT_FILENAME"], '/user/index.php') > 0) {
+                $context = \context_course::instance($courseid);
+                $roles = get_assignable_roles($context);
+                if (count($roles) > 0) {
+                    $PAGE->requires->js_call_amd('block_enrolcode/main', 'injectButton', array($courseid));
+                }
+            }
         }
     }
 }
