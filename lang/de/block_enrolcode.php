@@ -36,6 +36,7 @@ $string['confirmation'] = 'Bestätigung';
 $string['copied'] = 'in Zwischenablage kopiert';
 
 $string['custommaturity'] = 'Einschreibung möglich bis';
+$string['custommaturity:notice:no_maturity'] = 'Hinweis: Wenn kein Datum bei "Einschreibung möglich bis" gesetzt wird, läuft der Code beim Schließen des Dialogfensters sofort ab!';
 
 $string['enrol:success:redirect'] = 'Sie sind dem Kurs erfolgreich beigetreten und werden nun direkt weitergeleitet!';
 $string['enrolcode:addinstance'] = 'EnrolByCode-Block hinzufügen';

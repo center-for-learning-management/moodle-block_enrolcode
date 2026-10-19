@@ -79,6 +79,8 @@ class code_form extends \moodleform {
         $mform->setType('custommaturity', PARAM_INT);
         $mform->setDefault('maturity', time() + 60 * 60 * 24 * 7);
         $mform->setType('chkenrolmentend', PARAM_INT);
+        $notice = get_string('custommaturity:notice:no_maturity', 'block_enrolcode');
+        $mform->addElement('html', '<p class="alert alert-info">' . $notice . '</p>');
         $mform->addGroup($groupcustommaturity, 'groupcustommaturity', get_string('custommaturity', 'block_enrolcode'), '', false);
         $mform->addGroup($groupenrolmentend, 'groupenrolmentend', get_string('enrolmentend', 'block_enrolcode'), '', false);
         $mform->addElement('html', "<a href=\"#\" class=\"btn btn-primary\" onclick=\"var btn = this; require(['block_enrolcode/main'], function(MAIN) { MAIN.getCode(btn); }); return false;\">" . get_string('create') . "</a>");

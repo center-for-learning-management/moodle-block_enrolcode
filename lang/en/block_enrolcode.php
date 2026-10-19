@@ -36,6 +36,7 @@ $string['confirmation'] = 'Confirmation';
 $string['copied'] = 'copied';
 
 $string['custommaturity'] = 'Enrolment allowed until';
+$string['custommaturity:notice:no_maturity'] = 'Attention: if no date is set with "Enrolment allowed until", the enrolment code will expire immediately when the modal dialog is closed!';
 
 $string['enrol:success:redirect'] = 'Successfully joined course. You will be redirected to the course immediately.';
 $string['enrolcode:addinstance'] = 'Add EnrolByCode-Block';
