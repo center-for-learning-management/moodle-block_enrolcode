@@ -11,9 +11,9 @@
  */
 define(
   [ 'jquery', 'core/ajax', 'core/notification', 'core/str', 'core/templates',
-    'core/url', 'core/modal_events', 'core/modal_factory' ],
+    'core/url', 'core/modal_events', 'core/modal', 'core/modal_save_cancel', 'core/local/modal/alert' ],
   function ($, AJAX, NOTIFICATION, STR,
-            TEMPLATES, URL, ModalEvents, ModalFactory) {
+            TEMPLATES, URL, ModalEvents, Modal, ModalSaveCancel, ModalAlert) {
     return {
       debug: true,
       /**
@@ -26,8 +26,7 @@ define(
           {'key': 'confirmation', 'component': 'block_enrolcode'},
           {'key': 'really_delete', 'component': 'block_enrolcode', 'param': {'code': code}},
         ]).done(function(s) {
-            ModalFactory.create({
-              type: ModalFactory.types.SAVE_CANCEL,
+            ModalSaveCancel.create({
               title: s[0],
               body: s[1],
               large: false,
@@ -75,8 +74,7 @@ define(
         STR.get_strings([
           {'key': 'code:accesscode', 'component': 'block_enrolcode'},
         ]).done(function(s) {
-            ModalFactory.create({
-              type: ModalFactory.types.OK,
+            Modal.create({
               title: s[0] + ' <strong>' + enrolcode.accesscode + '</strong>',
               body: TEMPLATES.render('block_enrolcode/code_fullsize', enrolcode),
               large: true,
@@ -146,8 +144,7 @@ define(
               if (result !== '' && result !== null) {
                 let imageUrl = '/blocks/enrolcode/pix/qr.php?format=base64&txt=' + btoa(MAIN.generateEnrolURL(result));
                 // We got the code return it!
-                ModalFactory.create({
-                  type: ModalFactory.types.ALERT,
+                ModalAlert.create({
                   title: s[0],
                   body: TEMPLATES.render('block_enrolcode/modal_code', {
                     code: code,
