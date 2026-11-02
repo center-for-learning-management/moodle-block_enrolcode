@@ -213,10 +213,14 @@ define(
           {'key': 'code:get', component: 'block_enrolcode'},
         ]).done(function (s) {
             let req = 'require([\'block_enrolcode/main\'], function(MAIN) { MAIN.getCodeModal(' + courseid + '); }); return false;';
-            $('#page-content #action_bar.tertiary-navigation>div.row>div.navitem:last-child>div:first-child')
-              .prepend(
-              $('<div class="singlebutton enrolusersbutton block_enrolcode">').append(
-                $('<a href="#" onclick="' + req + '" class="btn btn-secondary my-1">' + s[0] + '</a>')
+            // Own navitem after the navigation selector, because the navitem of the enrol button only exists
+            // if the course has a manual enrolment instance. The container is div.row or div.d-flex (Bootstrap 5).
+            $('#action_bar .navitem:first-child')
+              .after(
+              $('<div class="navitem">').append(
+                $('<div class="singlebutton enrolusersbutton block_enrolcode">').append(
+                  $('<a href="#" onclick="' + req + '" class="btn btn-secondary my-1">' + s[0] + '</a>')
+                )
               )
             );
           }

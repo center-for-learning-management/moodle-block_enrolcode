@@ -29,7 +29,8 @@ class hook_callbacks {
             $PAGE->requires->js_call_amd('block_enrolcode/main', 'injectMainmenuButton', array());
         }
 
-        // Only inject the course button on the course participants page and if the user can assign roles in this context.
+        // Only inject the course button on the course participants page and if the user can create codes
+        // (enrol/manual:manage, same check as in locallib::create_code) and assign roles in this context.
         $subpath = str_replace(
             str_replace('\\', '/', $CFG->dirroot),
             '',
@@ -39,7 +40,7 @@ class hook_callbacks {
             if (strpos($_SERVER["SCRIPT_FILENAME"], '/user/index.php') > 0) {
                 $context = \context_course::instance($courseid);
                 $roles = get_assignable_roles($context);
-                if (count($roles) > 0) {
+                if (locallib::can_manage($courseid) && $roles) {
                     $PAGE->requires->js_call_amd('block_enrolcode/main', 'injectButton', array($courseid));
                 }
             }
