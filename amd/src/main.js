@@ -219,7 +219,7 @@ define(
               .after(
               $('<div class="navitem">').append(
                 $('<div class="singlebutton enrolusersbutton block_enrolcode">').append(
-                  $('<a href="#" onclick="' + req + '" class="btn btn-secondary my-1">' + s[0] + '</a>')
+                  $('<a href="#" onclick="' + req + '" class="btn btn-secondary">' + s[0] + '</a>')
                 )
               )
             );
