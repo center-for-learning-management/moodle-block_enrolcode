@@ -23,11 +23,8 @@
 
 namespace block_enrolcode;
 class hook_callbacks {
-    public static function before_standard_head_html_generation($hook): void {
+    public static function before_standard_head_html_generation(\core\hook\output\before_standard_head_html_generation $hook): void {
         global $CFG, $PAGE;
-        if (get_config('block_enrolcode', 'link_user_nav') == 1) {
-            $PAGE->requires->js_call_amd('block_enrolcode/main', 'injectMainmenuButton', array());
-        }
 
         // Only inject the course button on the course participants page and if the user can create codes
         // (enrol/manual:manage, same check as in locallib::create_code) and assign roles in this context.
@@ -35,15 +32,25 @@ class hook_callbacks {
             str_replace('\\', '/', $CFG->dirroot),
             '',
             str_replace('\\', '/', $_SERVER['SCRIPT_FILENAME']));
-        $courseid = optional_param('id', 0, PARAM_INT);
-        if ($subpath == '/user/index.php' && $courseid > 0) {
-            if (strpos($_SERVER["SCRIPT_FILENAME"], '/user/index.php') > 0) {
-                $context = \context_course::instance($courseid);
-                $roles = get_assignable_roles($context);
-                if (locallib::can_manage($courseid) && $roles) {
-                    $PAGE->requires->js_call_amd('block_enrolcode/main', 'injectButton', array($courseid));
-                }
+        $courseid = $PAGE->course->id;
+        if ($subpath == '/user/index.php' && $courseid > SITEID) {
+            $context = \context_course::instance($courseid);
+            $roles = get_assignable_roles($context);
+            if (locallib::can_manage($courseid) && $roles) {
+                $PAGE->requires->js_call_amd('block_enrolcode/main', 'injectButton', [$courseid]);
             }
         }
+    }
+
+    public static function extend_user_menu(\core_user\hook\extend_user_menu $hook): void {
+        if (!get_config('block_enrolcode', 'link_user_nav')) {
+            return;
+        }
+        $hook->add_navitem((object)[
+            'itemtype' => 'link',
+            'url' => new \moodle_url('/blocks/enrolcode/enrol.php'),
+            'title' => get_string('code:accesscode', 'block_enrolcode'),
+            'titleidentifier' => 'code:accesscode,block_enrolcode',
+        ]);
     }
 }

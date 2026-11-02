@@ -23,8 +23,8 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version = 2026101900;
-$plugin->requires = 2024042200;
+$plugin->version = 2026110100;
+$plugin->requires = 2024100700; // Moodle 4.5, for the extend_user_menu hook.
 $plugin->component = 'block_enrolcode';
 $plugin->release = '1.8';
 $plugin->maturity = MATURITY_STABLE;

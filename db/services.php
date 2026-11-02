@@ -24,45 +24,33 @@
 defined('MOODLE_INTERNAL') || die;
 
 // We define the web service functions to install.
-$functions = array(
-    'block_enrolcode_delete' => array(
-        'classname' => 'block_enrolcode_external',
+$functions = [
+    'block_enrolcode_delete' => [
+        'classname' => \block_enrolcode\external::class,
         'methodname' => 'delete',
-        'classpath' => 'blocks/enrolcode/externallib.php',
         'description' => 'Deletes a code.',
         'type' => 'write',
-        'ajax' => 1,
-    ),
-    'block_enrolcode_form' => array(
-        'classname' => 'block_enrolcode_external',
+        'ajax' => true,
+    ],
+    'block_enrolcode_form' => [
+        'classname' => \block_enrolcode\external::class,
         'methodname' => 'form',
-        'classpath' => 'blocks/enrolcode/externallib.php',
         'description' => 'Retrieves the form to create an enrolment accesscode in HTML.',
         'type' => 'read',
-        'ajax' => 1,
-    ),
-    'block_enrolcode_get' => array(
-        'classname' => 'block_enrolcode_external',
+        'ajax' => true,
+    ],
+    'block_enrolcode_get' => [
+        'classname' => \block_enrolcode\external::class,
         'methodname' => 'get',
-        'classpath' => 'blocks/enrolcode/externallib.php',
         'description' => 'Retrieves a code for fast enrolment',
-        'type' => 'read',
-        'ajax' => 1,
-    ),
-    'block_enrolcode_revoke' => array(
-        'classname' => 'block_enrolcode_external',
-        'methodname' => 'revoke',
-        'classpath' => 'blocks/enrolcode/externallib.php',
-        'description' => 'Revokes a code for fast enrolment',
         'type' => 'write',
-        'ajax' => 1,
-    ),
-    'block_enrolcode_send' => array(
-        'classname' => 'block_enrolcode_external',
+        'ajax' => true,
+    ],
+    'block_enrolcode_send' => [
+        'classname' => \block_enrolcode\external::class,
         'methodname' => 'send',
-        'classpath' => 'blocks/enrolcode/externallib.php',
         'description' => 'Sends a code for fast enrolment',
         'type' => 'write',
-        'ajax' => 1,
-    ),
-);
+        'ajax' => true,
+    ],
+];

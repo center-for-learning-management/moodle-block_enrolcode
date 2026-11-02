@@ -33,12 +33,10 @@ $string['code:enter'] = 'Enter temporary accesscode (as provided by your trainer
 $string['code:get'] = 'Temporary accesscode';
 $string['code:get:error'] = 'Error creating temporary accesscode';
 $string['confirmation'] = 'Confirmation';
-$string['copied'] = 'copied';
 
 $string['custommaturity'] = 'Enrolment allowed until';
 $string['custommaturity:notice:no_maturity'] = 'Attention: if no date is set with "Enrolment allowed until", the enrolment code will expire immediately when the modal dialog is closed!';
 
-$string['enrol:success:redirect'] = 'Successfully joined course. You will be redirected to the course immediately.';
 $string['enrolcode:addinstance'] = 'Add EnrolByCode-Block';
 $string['enrolcode:myaddinstance'] = 'Add EnrolByCode-Block to Dashboard';
 $string['enrolmentend'] = 'Enrolment ends at date';

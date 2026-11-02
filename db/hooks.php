@@ -29,4 +29,8 @@ $callbacks = [
         'callback' => [\block_enrolcode\hook_callbacks::class, 'before_standard_head_html_generation'],
         'priority' => 500,
     ],
+    [
+        'hook' => \core_user\hook\extend_user_menu::class,
+        'callback' => [\block_enrolcode\hook_callbacks::class, 'extend_user_menu'],
+    ],
 ];

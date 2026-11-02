@@ -27,18 +27,16 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once("{$CFG->libdir}/formslib.php");
 class code_form extends \moodleform {
-    static $accepted_types = '';
-    static $areamaxbytes = 10485760;
-    static $maxbytes = 1024 * 1024;
-    static $maxfiles = 1;
-    static $subdirs = 0;
+    public function __construct(private int $courseid) {
+        parent::__construct();
+    }
 
     function definition() {
-        global $CFG, $DB;
-        $courseid = \block_enrolcode\locallib::$create_form_courseid;
+        global $DB;
+        $courseid = $this->courseid;
         // @todo https://github.com/center-for-learning-management/eduvidual-src/issues/18
         $uniqid = substr(str_shuffle(str_repeat("0123456789abcdefghijklmnopqrstuvwxyz", 10)), 0, 10);
-        $oldcodes = $DB->get_records_sql("SELECT * FROM {block_enrolcode} WHERE courseid=? ORDER BY maturity ASC", array($courseid));
+        $oldcodes = $DB->get_records('block_enrolcode', ['courseid' => $courseid], 'maturity ASC');
         $mform = $this->_form;
         $mform->addElement('hidden', 'courseid', $courseid);
         $mform->setType('courseid', PARAM_INT);
@@ -47,8 +45,8 @@ class code_form extends \moodleform {
         $mform->addElement('html', "<div id=\"enrolform-$uniqid\">");
         $mform->addElement('select', 'roleid', get_string('role'), $roles);
         $mform->setDefault('roleid', 5);
-        $_groups = $DB->get_records_sql("SELECT id,name FROM {groups} WHERE courseid=? ORDER BY name ASC", array($courseid));
-        if (count($_groups) > 0) {
+        $_groups = groups_get_all_groups($courseid);
+        if ($_groups) {
             $groups = array();
             $groups[0] = get_string('none');
             foreach ($_groups as $group) {
@@ -58,23 +56,20 @@ class code_form extends \moodleform {
         } else {
             $mform->addElement('hidden', 'groupid');
         }
-        $utime = new \DateTime("now", \core_date::get_user_timezone_object());
-        $utz = $utime->getTimezone();
+        $mform->setType('groupid', PARAM_INT);
+        // No 'timezone' option: the selector then uses the user's timezone incl. DST, matching make_timestamp() in external::get().
         $startendargs = array(
             'startyear' => date("Y"),
             'stopyear' => date("Y") + 5,
-            'timezone' => floor($utz->getOffset(new \DateTime("now")) / 60 / 60),
             'step' => 5,
             'optional' => 0,
         );
         $groupcustommaturity = [];
         $groupenrolmentend = [];
-        $onclick_maturity = 'require(["jquery"], function($) { var inp = $("[data-uniqid=\'custommaturity-' . $uniqid . '\']"); inp.closest("form").find("#fgroup_id_groupcustommaturity").find("select").prop("disabled", !$(inp).is(":checked")); });';
-        $onclick_enrolmentend = 'require(["jquery"], function($) { var inp = $("[data-uniqid=\'chkenrolmentend-' . $uniqid . '\']"); inp.closest("form").find("#fgroup_id_groupenrolmentend").find("select").prop("disabled", !$(inp).is(":checked")); });';
         $groupcustommaturity[] =& $mform->createElement('date_time_selector', 'maturity', '' /*get_string('maturity', 'block_enrolcode')*/, $startendargs);
-        $groupcustommaturity[] =& $mform->createElement('checkbox', 'custommaturity', '', NULL, array('data-uniqid' => 'custommaturity-' . $uniqid, 'onclick' => $onclick_maturity));
+        $groupcustommaturity[] =& $mform->createElement('checkbox', 'custommaturity', '', NULL, array('data-uniqid' => 'custommaturity-' . $uniqid));
         $groupenrolmentend[] =& $mform->createElement('date_time_selector', 'enrolmentend', '' /* get_string('enrolmentend:short', 'block_enrolcode') */, $startendargs);
-        $groupenrolmentend[] =& $mform->createElement('checkbox', 'chkenrolmentend', '', NULL, array('data-uniqid' => 'chkenrolmentend-' . $uniqid, 'onclick' => $onclick_enrolmentend));
+        $groupenrolmentend[] =& $mform->createElement('checkbox', 'chkenrolmentend', '', NULL, array('data-uniqid' => 'chkenrolmentend-' . $uniqid));
         $mform->setDefault('custommaturity', 1);
         $mform->setType('custommaturity', PARAM_INT);
         $mform->setDefault('maturity', time() + 60 * 60 * 24 * 7);
@@ -88,52 +83,62 @@ class code_form extends \moodleform {
             $mform->addElement('html', "<a href=\"#\" class=\"btn btn-secondary\" onclick=\"require(['jquery'], function($) { $('#block_enrolcode_old_codes-" . $uniqid . "').toggleClass('hidden'); }); return false;\" style=\"margin-left: 10px;\">" . get_string('show_existing_codes', 'block_enrolcode') . "</a>");
         }
         $mform->addElement('html', "</div>"); // end div enrolform-uniqid
-        if (count($oldcodes) > 0) {
-            $table = array('<table class="generaltable">');
-            $table[] = '    <tr>';
-            $table[] = '        <th>&nbsp;</th>';
-            $table[] = '        <th>' . get_string('code:accesscode', 'block_enrolcode') . '</th>';
-            $table[] = '        <th>' . get_string('role') . '</th>';
-            $table[] = '        <th>' . get_string('group') . '</th>';
-            $table[] = '        <th>' . get_string('maturity', 'block_enrolcode') . '</th>';
-            $table[] = '        <th>' . get_string('enrolmentend:short', 'block_enrolcode') . '</th>';
-            $table[] = '    </tr>';
-            $a = 0;
-            foreach ($oldcodes as $oldcode) {
-                $itemuniqid = $uniqid . '-' . $a;
-                $group = $_groups[$oldcode->groupid] ?? '';
-                $role = $roles[$oldcode->roleid];
-                $table[] = '    <tr id="enrolcode-item-' . $itemuniqid . '" class="code" data-uniqid="' . $uniqid . '" data-code="' . $oldcode->code . '">';
-                $table[] = '        <td>';
-                $table[] = '            <a href="#" onclick="require([\'block_enrolcode/main\'], function(M) { M.fullsizeCode(\'' . $uniqid . '\', ' . $a . '); }); return false;"><i class="fa fa-expand"></i></a>';
-                $table[] = '            <a href="#" onclick="require([\'block_enrolcode/main\'], function(M) { M.deleteCode(\'' . $oldcode->code . '\', \'' . $uniqid . '\'); }); return false;"><i class="fa fa-trash"></i></a>';
-                $table[] = '        </td>';
-                $table[] = '        <td>';
-                $table[] = '            <img class="qr" src="' . $CFG->wwwroot . '/blocks/enrolcode/pix/qr.php?format=base64&txt=' . base64_encode("$CFG->wwwroot/blocks/enrolcode/enrol.php?code=" . $oldcode->code) . '" width="20" />';
-                $table[] = '            <a href="' . $CFG->wwwroot . '/blocks/enrolcode/enrol.php?code=' . $oldcode->code . '" target="_blank" class="accesscode">' . $oldcode->code . '</a>';
-                $table[] = '        </td>';
-                $table[] = '        <td class="role">' . $role . '</td>';
-                $table[] = '        <td class="group">' . (!empty($group->id) ? $group->name : '-') . '</td>';
-                $table[] = '        <td class="maturity">' . (!empty($oldcode->maturity) ? date('Y-m-d H:i:s', $oldcode->maturity) : get_string('maturity:immediately', 'block_enrolcode')) . '</td>';
-                $table[] = '        <td class="enrolmentend">' . (!empty($oldcode->enrolmentend) ? date('Y-m-d H:i:s', $oldcode->enrolmentend) : get_string('enrolmentend:never', 'block_enrolcode')) . '</td>';
-                $table[] = '    </tr>';
-                $a++;
-            }
-            $table[] = '</table>';
-            $mform->addElement('html', "<div id=\"block_enrolcode_old_codes-" . $uniqid . "\" class=\"hidden\" style=\"margin-top: 10px;\">" . implode("\n", $table) . "</div>");
+        if ($oldcodes) {
+            ob_start();
+            ?>
+            <div id="block_enrolcode_old_codes-<?= $uniqid ?>" class="hidden" style="margin-top: 10px;">
+                <table class="generaltable">
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th><?= get_string('code:accesscode', 'block_enrolcode') ?></th>
+                        <th><?= get_string('role') ?></th>
+                        <th><?= get_string('group') ?></th>
+                        <th><?= get_string('maturity', 'block_enrolcode') ?></th>
+                        <th><?= get_string('enrolmentend:short', 'block_enrolcode') ?></th>
+                    </tr>
+                    <?php foreach (array_values($oldcodes) as $a => $oldcode): ?>
+                        <?php $group = $_groups[$oldcode->groupid] ?? null; ?>
+                        <tr id="enrolcode-item-<?= $uniqid ?>-<?= $a ?>" class="code" data-uniqid="<?= $uniqid ?>" data-code="<?= $oldcode->code ?>">
+                            <td>
+                                <a href="#" onclick="require(['block_enrolcode/main'], function(M) { M.fullsizeCode('<?= $uniqid ?>', <?= $a ?>); }); return false;"><i class="fa fa-expand"></i></a>
+                                <a href="#" onclick="require(['block_enrolcode/main'], function(M) { M.deleteCode('<?= $oldcode->code ?>', '<?= $uniqid ?>'); }); return false;"><i class="fa fa-trash"></i></a>
+                            </td>
+                            <td>
+                                <img class="qr" src="<?= api::get_qr_url($oldcode->code) ?>" width="20" />
+                                <a href="<?= api::get_enrol_url($oldcode->code) ?>" target="_blank" class="accesscode"><?= $oldcode->code ?></a>
+                            </td>
+                            <td class="role"><?= $roles[$oldcode->roleid] ?? '-' ?></td>
+                            <td class="group"><?= $group ? format_string($group->name) : '-' ?></td>
+                            <td class="maturity"><?= $oldcode->maturity ? userdate($oldcode->maturity, '%Y-%m-%d %H:%M:%S', 99, false, false) : get_string('maturity:immediately', 'block_enrolcode') ?></td>
+                            <td class="enrolmentend"><?= $oldcode->enrolmentend ? userdate($oldcode->enrolmentend, '%Y-%m-%d %H:%M:%S', 99, false, false) : get_string('enrolmentend:never', 'block_enrolcode') ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </table>
+            </div>
+            <?php
+            $mform->addElement('html', ob_get_clean());
         }
-        // Unfortunately this does not work in modal, therefore afterwards we do it manually.
-        //$mform->hideIf('maturity', 'custommaturity', 'notchecked');
-        // Next line hides dateselector in modal.
-        $script = [
-            '<script type="text/javascript">',
-            $onclick_maturity,
-            $onclick_enrolmentend . ';',
-            'require(["jquery"], function($) { $("[data-uniqid=\'custommaturity-' . $uniqid . '\']").closest("form").find("#id_maturity_calendar,#id_enrolmentend_calendar").remove(); });',
-            //'$("#fgroup_id_groupcustommaturity, #fgroup_id_groupenrolmentend").css("display", "block").children(".col-md-3").remove();',
-            '</script>',
-        ];
-        $mform->addElement('html', implode("\n", $script));
+        // $mform->hideIf() does not work when the form is loaded into a modal, therefore the
+        // date selectors are enabled/disabled by their checkboxes manually.
+        ob_start();
+        ?>
+        <script>
+            require(['jquery'], function($) {
+                var form = $('[data-uniqid="custommaturity-<?= $uniqid ?>"]').closest('form');
+                [['custommaturity', 'groupcustommaturity'], ['chkenrolmentend', 'groupenrolmentend']].forEach(function(pair) {
+                    var checkbox = form.find('[name="' + pair[0] + '"]');
+                    var toggle = function() {
+                        form.find('#fgroup_id_' + pair[1] + ' select').prop('disabled', !checkbox.is(':checked'));
+                    };
+                    checkbox.on('change', toggle);
+                    toggle();
+                });
+                // The calendar popups don't work inside the modal.
+                form.find('#id_maturity_calendar, #id_enrolmentend_calendar').remove();
+            });
+        </script>
+        <?php
+        $mform->addElement('html', ob_get_clean());
         $mform->disable_form_change_checker();
     }
 }

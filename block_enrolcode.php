@@ -23,27 +23,15 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->dirroot . '/blocks/moodleblock.class.php');
 
 class block_enrolcode extends block_base {
-    /**
-     * Checks whether or not block_eduvidual is installed
-     * @return true or false
-     **/
-    public static function uses_eduvidual() {
-        global $CFG;
-        return file_exists($CFG->dirroot . '/blocks/eduvidual/block_eduvidual.php');
-    }
-
     public function init() {
         $this->title = get_string('code:accesscode', 'block_enrolcode');
     }
 
     public function get_content() {
-        global $COURSE, $OUTPUT, $PAGE;
-
-        $PAGE->requires->css('/blocks/enrolcode/style/enrolcode.css');
+        global $COURSE, $OUTPUT;
 
         if ($this->content !== null) {
             return $this->content;
